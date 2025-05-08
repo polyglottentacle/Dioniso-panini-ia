@@ -29,7 +29,8 @@ export default function Subscription() {
 - Tipo menu: ${preferenceName}
 - Consegna: Dal lunedì al venerdì
 - Orario: ${preferredTime}
-- Prezzo: €55/settimana (5 panini + 5 bevande, sconto 15%)`;
+- 5 panini + 5 bevande incluse
+- Prezzo: €55/settimana (sconto 15%)`;
     
     // Codificare il messaggio per URL
     const encodedMessage = encodeURIComponent(message);
@@ -56,7 +57,8 @@ export default function Subscription() {
           
           <div className="mb-6">
             <p className="text-3xl font-bold mb-2">€55/settimana</p>
-            <p className="text-sm opacity-80">5 panini e 5 bevande con sconto del 15%</p>
+            <p className="bg-white/20 px-3 py-2 rounded-md inline-block text-md font-medium">5 panini + 5 bevande incluse</p>
+            <p className="text-sm opacity-80 mt-2">Sconto del 15% sul prezzo standard</p>
           </div>
           
           <div className="space-y-4 mb-8">

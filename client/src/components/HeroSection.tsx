@@ -16,9 +16,15 @@ export default function HeroSection() {
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-3 max-w-xl leading-tight">
             {t('hero.title')}
           </h2>
-          <p className="text-lg md:text-xl text-white/90 max-w-lg">
+          <p className="text-lg md:text-xl text-white/90 max-w-lg mb-3">
             {t('hero.subtitle')}
           </p>
+          <div className="bg-white/90 p-3 rounded-lg mb-4 border border-fisher-accent max-w-md">
+            <p className="text-md font-medium text-fisher-blue-dark flex items-center">
+              <span className="mr-2">⏰</span>
+              Ordina entro le 16:00, paga e ricevi alla tua prossima pausa il tuo menu!
+            </p>
+          </div>
         </div>
       </div>
     </section>

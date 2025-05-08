@@ -358,7 +358,7 @@ export const products: Product[] = [
     descriptionEn: 'Orange Fanta (33cl)',
     descriptionEs: 'Fanta de naranja (33cl)',
     price: 3.00,
-    imageUrl: 'https://images.unsplash.com/photo-1624552184280-9e9631befb32?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
+    imageUrl: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: true,
     isCustomizable: false
