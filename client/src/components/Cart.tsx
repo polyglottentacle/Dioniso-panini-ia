@@ -9,7 +9,6 @@ export default function Cart() {
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateCartItemQuantity } = useCart();
   
   const [notes, setNotes] = useState("");
-  const [floor, setFloor] = useState("Piano 1");
   const [deliveryTime, setDeliveryTime] = useState("11:00");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   
@@ -193,7 +192,6 @@ export default function Cart() {
         onClose={() => setShowWhatsAppModal(false)}
         cartItems={cartItems}
         total={total}
-        floor={floor}
         time={deliveryTime}
         notes={notes}
       />

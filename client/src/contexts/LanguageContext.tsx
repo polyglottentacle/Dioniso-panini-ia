@@ -43,4 +43,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export const useLanguage = () => useContext(LanguageContext);
+// Export il hook per utilizzare il context
+export function useLanguage() {
+  return useContext(LanguageContext);
+}
