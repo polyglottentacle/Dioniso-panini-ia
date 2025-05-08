@@ -1,6 +1,8 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CartItem } from "@/lib/data";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface WhatsAppModalProps {
 
 export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor, time, notes }: WhatsAppModalProps) {
   const { t, language } = useLanguage();
+  const { clearCart, toggleCart } = useCart();
   
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -22,9 +25,13 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
   
   // Get product name for current language
   const getProductName = (item: CartItem) => {
-    return language === 'it' ? item.product.nameIt : 
-           language === 'en' ? item.product.nameEn : 
-           item.product.nameEs;
+    switch(language) {
+      case 'it': return item.product.nameIt;
+      case 'en': return item.product.nameEn;
+      case 'es': return item.product.nameEs;
+      case 'nl': return item.product.nameEn; // Fallback to English for Dutch (as we don't have Dutch translations for products yet)
+      default: return item.product.nameEn;
+    }
   };
   
   // Generate WhatsApp message
@@ -109,6 +116,14 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
+                onClick={() => {
+                  // Completa l'ordine pulendo il carrello e chiudendo il modale
+                  setTimeout(() => {
+                    clearCart();
+                    onClose();
+                    toggleCart();
+                  }, 500);
+                }}
               >
                 {t('whatsapp.open')}
               </a>

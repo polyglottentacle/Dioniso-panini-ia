@@ -21,16 +21,24 @@ export default function Cart() {
   
   // Get product name for current language
   const getProductName = (item: any) => {
-    return language === 'it' ? item.product.nameIt : 
-           language === 'en' ? item.product.nameEn : 
-           item.product.nameEs;
+    switch(language) {
+      case 'it': return item.product.nameIt;
+      case 'en': return item.product.nameEn;
+      case 'es': return item.product.nameEs;
+      case 'nl': return item.product.nameEn; // Fallback to English for Dutch (as we don't have Dutch translations for products yet)
+      default: return item.product.nameEn;
+    }
   };
   
   // Get product description for current language
   const getProductDescription = (item: any) => {
-    return language === 'it' ? item.product.descriptionIt : 
-           language === 'en' ? item.product.descriptionEn : 
-           item.product.descriptionEs;
+    switch(language) {
+      case 'it': return item.product.descriptionIt;
+      case 'en': return item.product.descriptionEn;
+      case 'es': return item.product.descriptionEs;
+      case 'nl': return item.product.descriptionEn; // Fallback to English for Dutch
+      default: return item.product.descriptionEn;
+    }
   };
   
   // Format as currency
