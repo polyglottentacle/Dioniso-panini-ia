@@ -17,6 +17,7 @@ interface WhatsAppModalProps {
 export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor, time, notes }: WhatsAppModalProps) {
   const { t, language } = useLanguage();
   const { clearCart, toggleCart } = useCart();
+  const { toast } = useToast();
   
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -122,6 +123,13 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
                     clearCart();
                     onClose();
                     toggleCart();
+                    
+                    // Mostra un toast di conferma
+                    toast({
+                      title: t('cart.orderSuccess'),
+                      description: t('cart.orderSuccessMessage'),
+                      variant: "default",
+                    });
                   }, 500);
                 }}
               >
