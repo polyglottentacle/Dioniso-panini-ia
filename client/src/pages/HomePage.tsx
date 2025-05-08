@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import CategoryTabs from "@/components/CategoryTabs";
@@ -8,25 +8,40 @@ import Footer from "@/components/Footer";
 import Cart from "@/components/Cart";
 import { categories } from "@/lib/data";
 
+// Memorizziamo i componenti per evitare re-render inutili
+const MemoizedHeroSection = memo(HeroSection);
+const MemoizedCategoryTabs = memo(CategoryTabs);
+const MemoizedProductGrid = memo(ProductGrid);
+const MemoizedSubscription = memo(Subscription);
+const MemoizedFooter = memo(Footer);
+
 export default function HomePage() {
+  // Utilizziamo una funzione callback memorizzata per evitare ri-creazioni inutili
   const [activeCategory, setActiveCategory] = useState(1); // Default to first category
+  
+  const handleCategoryChange = useCallback((categoryId: number) => {
+    setActiveCategory(categoryId);
+  }, []);
+  
+  // Memorizziamo le categories per evitare ricreazioni inutili
+  const categoriesData = useMemo(() => categories, []);
   
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
       <Header />
       
       <main className="container mx-auto px-4 py-6 flex-grow">
-        <HeroSection />
-        <CategoryTabs 
-          categories={categories} 
+        <MemoizedHeroSection />
+        <MemoizedCategoryTabs 
+          categories={categoriesData} 
           activeCategory={activeCategory} 
-          setActiveCategory={setActiveCategory} 
+          setActiveCategory={handleCategoryChange} 
         />
-        <ProductGrid categoryId={activeCategory} />
-        <Subscription />
+        <MemoizedProductGrid categoryId={activeCategory} />
+        <MemoizedSubscription />
       </main>
       
-      <Footer />
+      <MemoizedFooter />
       <Cart />
     </div>
   );
