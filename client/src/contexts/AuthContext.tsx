@@ -1,56 +1,97 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { User } from "@/lib/data";
+import { signInWithGoogle, logoutUser, getCurrentUser } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;
-  login: () => void;
-  logout: () => void;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: () => {},
-  logout: () => {},
+  login: async () => {},
+  logout: async () => {},
+  loading: true,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  // Load user from localStorage on mount
+  // Controlla se l'utente è già autenticato all'avvio
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const initAuth = async () => {
       try {
-        setUser(JSON.parse(savedUser));
+        const firebaseUser = await getCurrentUser();
+        
+        if (firebaseUser) {
+          // Converti il FirebaseUser nel formato del nostro User
+          const appUser: User = {
+            id: 1, // ID temporaneo, in un'app reale dovrebbe essere generato o recuperato dal database
+            displayName: firebaseUser.displayName || "Utente",
+            email: firebaseUser.email || "",
+            avatar: firebaseUser.photoURL || undefined,
+            loyaltyPoints: 320, // Valore di default, in un'app reale dovrebbe essere recuperato dal database
+            loyaltyLevel: "silver" // Valore di default, in un'app reale dovrebbe essere calcolato
+          };
+          
+          setUser(appUser);
+        }
       } catch (error) {
-        console.error('Error parsing user from localStorage:', error);
+        console.error("Errore durante l'inizializzazione dell'auth:", error);
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []);
-  
-  // Mock login function (for demo)
-  const login = () => {
-    // Create a mock user for demonstration
-    const demoUser: User = {
-      id: 1,
-      displayName: "Marco Fischer",
-      email: "marco.fischer@example.com",
-      loyaltyPoints: 320,
-      loyaltyLevel: "silver"
     };
     
-    setUser(demoUser);
-    localStorage.setItem('user', JSON.stringify(demoUser));
+    initAuth();
+  }, []);
+  
+  // Login con Google
+  const login = async () => {
+    try {
+      setLoading(true);
+      const firebaseUser = await signInWithGoogle();
+      
+      if (firebaseUser) {
+        // Converti il FirebaseUser nel formato del nostro User
+        const appUser: User = {
+          id: 1, // ID temporaneo
+          displayName: firebaseUser.displayName || "Utente",
+          email: firebaseUser.email || "",
+          avatar: firebaseUser.photoURL || undefined,
+          loyaltyPoints: 320, // Default
+          loyaltyLevel: "silver" // Default
+        };
+        
+        setUser(appUser);
+      }
+    } catch (error) {
+      console.error("Errore durante il login:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
   
-  // Logout function
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  // Logout
+  const logout = async () => {
+    try {
+      setLoading(true);
+      await logoutUser();
+      setUser(null);
+    } catch (error) {
+      console.error("Errore durante il logout:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
   
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
