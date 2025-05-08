@@ -9,12 +9,11 @@ interface WhatsAppModalProps {
   onClose: () => void;
   cartItems: CartItem[];
   total: number;
-  floor: string;
   time: string;
   notes: string;
 }
 
-export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor, time, notes }: WhatsAppModalProps) {
+export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time, notes }: WhatsAppModalProps) {
   const { t, language } = useLanguage();
   const { clearCart, toggleCart } = useCart();
   const { toast } = useToast();
