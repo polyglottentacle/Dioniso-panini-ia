@@ -145,6 +145,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Registration failed" });
     }
   });
+  
+  // Firebase Auth API
+  app.post(`${apiPath}/users/firebase-auth`, async (req, res) => {
+    try {
+      const { email, displayName, photoURL } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+      
+      // Cerca l'utente via email
+      let user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        // Genera uno username unico basato sull'email
+        const username = email.split('@')[0] + '_' + Math.floor(Math.random() * 1000);
+        
+        // Crea un nuovo utente se non esiste
+        const newUser = {
+          username,
+          email,
+          displayName: displayName || email.split('@')[0],
+          avatar: photoURL || null,
+          password: Math.random().toString(36).slice(-10), // Password casuale
+          loyaltyPoints: 0,
+          loyaltyLevel: 'bronze'
+        };
+        
+        user = await storage.createUser(newUser as InsertUser);
+      }
+      
+      // Non restituire la password
+      const { password: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error('Firebase auth error:', error);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  });
 
   app.get(`${apiPath}/users/:id/loyalty`, async (req, res) => {
     try {

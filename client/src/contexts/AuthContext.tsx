@@ -56,16 +56,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const firebaseUser = await signInWithGoogle();
       
       if (firebaseUser) {
-        // Converti il FirebaseUser nel formato del nostro User
-        const appUser: User = {
-          id: 1, // ID temporaneo
-          displayName: firebaseUser.displayName || "Utente",
-          email: firebaseUser.email || "",
-          avatar: firebaseUser.photoURL || undefined,
-          loyaltyPoints: 320, // Default
-          loyaltyLevel: "silver" // Default
-        };
+        // Invia le informazioni del firebaseUser al nostro backend
+        const response = await fetch('/api/users/firebase-auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL
+          })
+        });
         
+        if (!response.ok) {
+          throw new Error('Errore nella risposta del server');
+        }
+        
+        // Ottieni il nostro utente dal database
+        const appUser = await response.json();
         setUser(appUser);
       }
     } catch (error) {
