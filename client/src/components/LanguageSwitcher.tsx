@@ -23,6 +23,12 @@ export default function LanguageSwitcher() {
       >
         🇪🇸 ES
       </button>
+      <button 
+        className={`px-2 py-1 rounded transition ${language === 'nl' ? 'bg-fisher-blue text-white' : 'hover:bg-fisher-gray'}`}
+        onClick={() => setLanguage('nl')}
+      >
+        🇳🇱 NL
+      </button>
     </div>
   );
 }

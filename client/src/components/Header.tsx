@@ -44,7 +44,7 @@ export default function Header() {
               Dioniso Caffè
             </h1>
             <span className="font-playfair italic text-lg text-fisher-accent">
-              Fisher Edition
+              A.S.F. Fischer BV
             </span>
           </div>
           
