@@ -57,7 +57,7 @@ export const categories: Category[] = [
 
 // Products data
 export const products: Product[] = [
-  // Panini Premium - Tutti allo stesso prezzo (8.90€)
+  // Panini Premium - Tutti allo stesso prezzo (10€)
   {
     id: 1,
     categoryId: 1,
@@ -67,7 +67,7 @@ export const products: Product[] = [
     descriptionIt: 'Prosciutto crudo, mozzarella di bufala, rucola e pomodori secchi su pane toscano',
     descriptionEn: 'Prosciutto, buffalo mozzarella, arugula and sun-dried tomatoes on Tuscan bread',
     descriptionEs: 'Jamón crudo, mozzarella de búfala, rúcula y tomates secos en pan toscano',
-    price: 8.90,
+    price: 10.00,
     imageUrl: 'https://images.unsplash.com/photo-1550507992-eb63ffee0847?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: true,
     isVegetarian: false,
@@ -82,7 +82,7 @@ export const products: Product[] = [
     descriptionIt: 'Verdure grigliate, pesto di basilico, formaggio di capra e hummus su pane ai cereali',
     descriptionEn: 'Grilled vegetables, basil pesto, goat cheese and hummus on multigrain bread',
     descriptionEs: 'Verduras a la parrilla, pesto de albahaca, queso de cabra y hummus en pan de cereales',
-    price: 8.90,
+    price: 10.00,
     imageUrl: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: true,
@@ -97,7 +97,7 @@ export const products: Product[] = [
     descriptionIt: 'Salame piccante, provolone, crema di olive e peperoni arrostiti su pane rustico',
     descriptionEn: 'Spicy salami, provolone, olive spread and roasted peppers on rustic bread',
     descriptionEs: 'Salami picante, provolone, crema de aceitunas y pimientos asados ​​en pan rústico',
-    price: 8.90,
+    price: 10.00,
     imageUrl: 'https://images.unsplash.com/photo-1628294896516-344152572ee8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: false,
@@ -112,7 +112,7 @@ export const products: Product[] = [
     descriptionIt: 'Salmone affumicato, formaggio spalmabile alle erbe, avocado e aneto su pane integrale',
     descriptionEn: 'Smoked salmon, herb cream cheese, avocado and dill on whole grain bread',
     descriptionEs: 'Salmón ahumado, queso crema de hierbas, aguacate y eneldo en pan integral',
-    price: 8.90,
+    price: 10.00,
     imageUrl: 'https://images.unsplash.com/photo-1619096252214-ef06c45683e3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: true,
     isVegetarian: false,
@@ -127,7 +127,7 @@ export const products: Product[] = [
     descriptionIt: 'Porchetta di Ariccia, cicoria ripassata, pecorino romano e salsa verde su ciabatta',
     descriptionEn: 'Ariccia porchetta, sautéed chicory, pecorino romano and salsa verde on ciabatta',
     descriptionEs: 'Porchetta de Ariccia, achicoria salteada, pecorino romano y salsa verde en ciabatta',
-    price: 8.90,
+    price: 10.00,
     imageUrl: 'https://images.unsplash.com/photo-1504937551116-cb8097e6f02a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: false,

@@ -1,0 +1,22 @@
+Aggiornamenti prezzi:
+
+1. Tutti i panini a 10.00€:
+- price: 8.90 -> price: 10.00 per tutti i panini
+
+2. Aumentare piatti principali:
+- price: 10.50 -> price: 12.00
+- price: 12.90 -> price: 15.00
+- price: 14.90 -> price: 18.00
+
+3. Aggiornare prezzi bevande:
+- Acqua Minerale: price: 1.50 -> price: 2.00
+- Espresso Italiano: price: 1.80 -> price: 2.50
+- Cappuccino: price: 2.50 -> price: 3.00
+- Limonata Fresca: price: 3.20 -> price: 3.50
+
+4. Rimuovere il vino al bicchiere (id: 21)
+
+5. Calcolo abbonamento settimanale:
+- Base: 5 panini (10.00€) + 5 bevande (media 3.00€) = 50€ + 15€ = 65€
+- Sconto 15%: 65€ - 9.75€ = 55.25€
+- Arrotondato: 55€/settimana
