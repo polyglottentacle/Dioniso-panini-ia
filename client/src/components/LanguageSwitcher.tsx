@@ -6,13 +6,13 @@ export default function LanguageSwitcher() {
   return (
     <div className="language-selector flex space-x-2 text-sm">
       <button 
-        className={`px-2 py-1 rounded transition ${language === 'it' ? 'bg-fisher-blue text-white' : 'hover:bg-gray-100'}`}
+        className={`px-2 py-1 rounded transition ${language === 'it' ? 'bg-fisher-blue text-white' : 'hover:bg-fisher-gray'}`}
         onClick={() => setLanguage('it')}
       >
         🇮🇹 IT
       </button>
       <button 
-        className={`px-2 py-1 rounded transition ${language === 'en' ? 'bg-fisher-blue text-white' : 'hover:bg-gray-100'}`}
+        className={`px-2 py-1 rounded transition ${language === 'en' ? 'bg-fisher-blue text-white' : 'hover:bg-fisher-gray'}`}
         onClick={() => setLanguage('en')}
       >
         🇬🇧 EN

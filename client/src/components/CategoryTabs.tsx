@@ -26,7 +26,7 @@ export default function CategoryTabs({ categories, activeCategory, setActiveCate
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
               className={`category-tab whitespace-nowrap px-4 py-2 rounded-full font-medium transition
-                ${isActive ? 'bg-fisher-blue text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                ${isActive ? 'bg-fisher-blue text-white' : 'bg-fisher-gray hover:bg-gray-300'}`}
             >
               {categoryName}
             </button>

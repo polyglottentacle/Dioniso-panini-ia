@@ -15,11 +15,11 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 220 90% 33.7%; /* Fisher blue: #0047AB */
+  --primary: 203 100% 18%; /* Fisher blue: #003759 - dark blue */
   --primary-foreground: 211 100% 99%;
-  --secondary: 0 0% 83%; /* Fisher gray: #D3D3D3 */
+  --secondary: 0 0% 92%; /* Fisher light gray: #EBEBEB */
   --secondary-foreground: 24 9.8% 10%;
-  --accent: 60 4.8% 95.9%;
+  --accent: 203 63% 77%; /* Fisher light blue: #86BEDE */
   --accent-foreground: 24 9.8% 10%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
@@ -27,10 +27,11 @@
   --radius: 0.5rem;
   
   /* Fisher Brand Colors */
-  --fisher-blue: 215 100% 33.7%; /* #0047AB */
-  --fisher-blue-dark: 215 100% 25%; /* #003380 */
-  --fisher-gold: 51 61.4% 52.5%; /* #D4AF37 */
-  --fisher-gray: 0 0% 83%; /* #D3D3D3 */
+  --fisher-blue: 203 100% 18%; /* #003759 - dark blue */
+  --fisher-blue-dark: 208 100% 10%; /* #001A2C - darker blue */
+  --fisher-gold: 38 80% 63%; /* #ECC85E - gold accent */
+  --fisher-gray: 0 0% 92%; /* #EBEBEB - light gray */
+  --fisher-accent: 203 63% 77%; /* #86BEDE - light blue */
 }
 
 .dark {
@@ -44,11 +45,11 @@
   --card-foreground: 0 0% 98%;
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  --primary: 215 100% 33.7%; /* Fisher blue: #0047AB */
+  --primary: 203 100% 18%; /* Fisher blue: #003759 - dark blue */
   --primary-foreground: 211 100% 99%;
-  --secondary: 0 0% 83%; /* Fisher gray: #D3D3D3 */
+  --secondary: 0 0% 92%; /* Fisher light gray: #EBEBEB */
   --secondary-foreground: 0 0% 98%;
-  --accent: 240 3.7% 15.9%;
+  --accent: 203 63% 77%; /* Fisher light blue: #86BEDE */
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
@@ -92,6 +93,10 @@
     color: hsl(var(--fisher-gray));
   }
   
+  .fisher-accent {
+    color: hsl(var(--fisher-accent));
+  }
+  
   .bg-fisher-blue {
     background-color: hsl(var(--fisher-blue));
   }
@@ -106,6 +111,10 @@
   
   .bg-fisher-gray {
     background-color: hsl(var(--fisher-gray));
+  }
+  
+  .bg-fisher-accent {
+    background-color: hsl(var(--fisher-accent));
   }
 }
 

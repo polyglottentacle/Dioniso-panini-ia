@@ -21,7 +21,7 @@ export default function Header() {
             <h1 className="text-2xl md:text-3xl font-bold text-fisher-blue">
               Dioniso Caffè
             </h1>
-            <span className="font-playfair italic text-lg text-fisher-blue-dark">
+            <span className="font-playfair italic text-lg text-fisher-accent">
               Fisher Edition
             </span>
           </div>
@@ -35,7 +35,7 @@ export default function Header() {
               {!user ? (
                 <button 
                   onClick={login}
-                  className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                  className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue hover:bg-fisher-gray transition"
                 >
                   <img 
                     src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
@@ -47,7 +47,7 @@ export default function Header() {
               ) : (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium">{user.displayName}</span>
-                  <div className="w-8 h-8 rounded-full bg-fisher-blue-dark text-white flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-fisher-blue text-white flex items-center justify-center">
                     {user.displayName.split(' ').map(name => name[0]).join('')}
                   </div>
                 </div>
@@ -55,7 +55,7 @@ export default function Header() {
               
               <button 
                 onClick={toggleCart}
-                className="relative p-2 text-fisher-blue hover:bg-gray-100 rounded-full transition"
+                className="relative p-2 text-fisher-blue hover:bg-fisher-gray rounded-full transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1"></circle>

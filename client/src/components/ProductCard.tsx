@@ -65,10 +65,10 @@ export default function ProductCard({ product }: ProductCardProps) {
               </button>
             )}
             <motion.button 
-              className="add-to-cart px-3 py-1.5 bg-fisher-blue text-white rounded hover:bg-fisher-blue-dark transition"
+              className="add-to-cart px-3 py-1.5 bg-fisher-blue text-white rounded-md hover:bg-fisher-blue-dark transition"
               onClick={handleAddToCart}
-              whileTap={{ scale: 1.2 }}
-              transition={{ duration: 0.3 }}
+              whileTap={{ scale: 1.1 }}
+              transition={{ duration: 0.2 }}
             >
               {t('product.add')}
             </motion.button>
