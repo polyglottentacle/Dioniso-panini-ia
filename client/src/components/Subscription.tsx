@@ -28,8 +28,8 @@ export default function Subscription() {
           <p className="text-lg opacity-90 mb-6">{t('subscription.subtitle')}</p>
           
           <div className="mb-6">
-            <p className="text-3xl font-bold mb-2">{t('subscription.price')}</p>
-            <p className="text-sm opacity-80">{t('subscription.meals')}</p>
+            <p className="text-3xl font-bold mb-2">€55/settimana</p>
+            <p className="text-sm opacity-80">5 panini e 5 bevande con sconto del 15%</p>
           </div>
           
           <div className="space-y-4 mb-8">
