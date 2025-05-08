@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema } from "@shared/schema";
+import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, type InsertUser } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -163,17 +163,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const username = email.split('@')[0] + '_' + Math.floor(Math.random() * 1000);
         
         // Crea un nuovo utente se non esiste
-        const newUser = {
+        const userData = insertUserSchema.parse({
           username,
           email,
           displayName: displayName || email.split('@')[0],
-          avatar: photoURL || null,
           password: Math.random().toString(36).slice(-10), // Password casuale
-          loyaltyPoints: 0,
-          loyaltyLevel: 'bronze'
-        };
+        });
         
-        user = await storage.createUser(newUser as InsertUser);
+        user = await storage.createUser(userData);
       }
       
       // Non restituire la password
