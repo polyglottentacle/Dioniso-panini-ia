@@ -2,13 +2,50 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MenuPreference, DeliveryTime } from "@/lib/data";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Subscription() {
   const { t } = useLanguage();
+  const { toast } = useToast();
   
   // State for subscription preferences
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
   const [preferredTime, setPreferredTime] = useState<DeliveryTime>('11:00');
+  
+  // Funzione per inviare l'ordine dell'abbonamento a WhatsApp
+  const sendSubscriptionToWhatsApp = () => {
+    // Numero di telefono WhatsApp
+    const phoneNumber = "31619311373";
+    
+    // Preparare il messaggio
+    const preferenceName = 
+      menuPreference === 'vegetarian' 
+        ? 'Vegetariano' 
+        : menuPreference === 'halal' 
+          ? 'Halal' 
+          : 'Standard';
+          
+    const message = `*NUOVO ABBONAMENTO SETTIMANALE*
+- Tipo menu: ${preferenceName}
+- Consegna: Dal lunedì al venerdì
+- Orario: ${preferredTime}
+- Prezzo: €55/settimana (5 panini + 5 bevande, sconto 15%)`;
+    
+    // Codificare il messaggio per URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Creare il link WhatsApp
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    
+    // Aprire WhatsApp in una nuova finestra/tab
+    window.open(whatsappURL, '_blank');
+    
+    // Mostrare messaggio di conferma
+    toast({
+      title: "Abbonamento attivato!",
+      description: "La tua richiesta è stata inviata via WhatsApp.",
+    });
+  };
   
   return (
     <section className="my-16 bg-gradient-to-r from-fisher-blue to-fisher-blue-dark rounded-xl overflow-hidden shadow-xl">
@@ -42,14 +79,6 @@ export default function Subscription() {
               <span>{t('subscription.benefit3')}</span>
             </div>
           </div>
-          
-          <motion.button 
-            className="bg-fisher-gold hover:bg-yellow-400 text-fisher-blue-dark font-bold py-3 px-6 rounded-lg transition w-full md:w-auto"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            {t('subscription.activate')}
-          </motion.button>
         </div>
         
         <div className="md:w-1/2 bg-white p-8">
@@ -100,6 +129,15 @@ export default function Subscription() {
               </div>
             </div>
           </div>
+          
+          <motion.button 
+            className="bg-fisher-gold hover:bg-yellow-400 text-fisher-blue-dark font-bold py-3 px-6 rounded-lg transition w-full"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={sendSubscriptionToWhatsApp}
+          >
+            {t('subscription.activate')}
+          </motion.button>
         </div>
       </div>
     </section>
