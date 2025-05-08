@@ -18,7 +18,7 @@ export default function LanguageSwitcher() {
         🇬🇧 EN
       </button>
       <button 
-        className={`px-2 py-1 rounded transition ${language === 'es' ? 'bg-fisher-blue text-white' : 'hover:bg-gray-100'}`}
+        className={`px-2 py-1 rounded transition ${language === 'es' ? 'bg-fisher-blue text-white' : 'hover:bg-fisher-gray'}`}
         onClick={() => setLanguage('es')}
       >
         🇪🇸 ES

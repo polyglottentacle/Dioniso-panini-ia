@@ -54,9 +54,9 @@ export default function Subscription() {
           </div>
           
           <motion.button 
-            className="bg-fisher-gold hover:bg-yellow-500 text-fisher-blue font-bold py-3 px-6 rounded-lg transition w-full md:w-auto"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="bg-fisher-gold hover:bg-yellow-400 text-fisher-blue-dark font-bold py-3 px-6 rounded-lg transition w-full md:w-auto"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
             {t('subscription.activate')}
           </motion.button>
@@ -68,7 +68,7 @@ export default function Subscription() {
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('subscription.preference')}</label>
             <select 
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-fisher-accent focus:border-fisher-accent"
               value={menuPreference}
               onChange={e => setMenuPreference(e.target.value as MenuPreference)}
             >
@@ -86,79 +86,79 @@ export default function Subscription() {
                 <input 
                   type="checkbox" 
                   id="monday" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredDays.includes('mon')}
                   onChange={() => toggleDay('mon')}
                 />
-                <label htmlFor="monday">{t('subscription.day.mon')}</label>
+                <label htmlFor="monday" className="text-sm">{t('subscription.day.mon')}</label>
               </div>
               <div className="flex items-center">
                 <input 
                   type="checkbox" 
                   id="tuesday" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredDays.includes('tue')}
                   onChange={() => toggleDay('tue')}
                 />
-                <label htmlFor="tuesday">{t('subscription.day.tue')}</label>
+                <label htmlFor="tuesday" className="text-sm">{t('subscription.day.tue')}</label>
               </div>
               <div className="flex items-center">
                 <input 
                   type="checkbox" 
                   id="wednesday" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredDays.includes('wed')}
                   onChange={() => toggleDay('wed')}
                 />
-                <label htmlFor="wednesday">{t('subscription.day.wed')}</label>
+                <label htmlFor="wednesday" className="text-sm">{t('subscription.day.wed')}</label>
               </div>
               <div className="flex items-center">
                 <input 
                   type="checkbox" 
                   id="thursday" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredDays.includes('thu')}
                   onChange={() => toggleDay('thu')}
                 />
-                <label htmlFor="thursday">{t('subscription.day.thu')}</label>
+                <label htmlFor="thursday" className="text-sm">{t('subscription.day.thu')}</label>
               </div>
               <div className="flex items-center">
                 <input 
                   type="checkbox" 
                   id="friday" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredDays.includes('fri')}
                   onChange={() => toggleDay('fri')}
                 />
-                <label htmlFor="friday">{t('subscription.day.fri')}</label>
+                <label htmlFor="friday" className="text-sm">{t('subscription.day.fri')}</label>
               </div>
             </div>
           </div>
           
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('subscription.time')}</label>
-            <div className="flex space-x-4">
+            <div className="flex space-x-6">
               <div className="flex items-center">
                 <input 
                   type="radio" 
                   id="time-11" 
                   name="delivery-time" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredTime === '11:00'}
                   onChange={() => setPreferredTime('11:00')}
                 />
-                <label htmlFor="time-11">11:00</label>
+                <label htmlFor="time-11" className="text-sm">11:00</label>
               </div>
               <div className="flex items-center">
                 <input 
                   type="radio" 
                   id="time-17" 
                   name="delivery-time" 
-                  className="mr-2"
+                  className="mr-2 h-4 w-4 border-gray-300 text-fisher-blue focus:ring-fisher-accent"
                   checked={preferredTime === '17:00'}
                   onChange={() => setPreferredTime('17:00')}
                 />
-                <label htmlFor="time-17">17:00</label>
+                <label htmlFor="time-17" className="text-sm">17:00</label>
               </div>
             </div>
           </div>

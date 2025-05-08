@@ -180,7 +180,7 @@ export default function Cart() {
                   </div>
                   
                   <motion.button 
-                    className="bg-green-500 hover:bg-green-600 text-white w-full py-3 rounded-lg font-bold flex items-center justify-center"
+                    className="bg-green-600 hover:bg-green-700 text-white w-full py-3 rounded-lg font-bold flex items-center justify-center shadow-md"
                     onClick={() => setShowWhatsAppModal(true)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

@@ -4,23 +4,23 @@ export default function Footer() {
   const { t } = useLanguage();
   
   return (
-    <footer className="bg-gray-800 text-white py-8">
+    <footer className="bg-fisher-blue-dark text-white py-8">
       <div className="container mx-auto px-4">
         <div className="md:flex justify-between">
           <div className="mb-6 md:mb-0">
             <div className="flex items-center mb-4">
               <h3 className="text-xl font-bold">Dioniso Caffè</h3>
-              <span className="font-playfair italic ml-2 text-fisher-gray">Fisher Edition</span>
+              <span className="font-playfair italic ml-2 text-fisher-accent">Fisher Edition</span>
             </div>
-            <p className="text-gray-400 text-sm max-w-md">
+            <p className="text-gray-300 text-sm max-w-md">
               {t('footer.description')}
             </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-              <h4 className="text-lg font-semibold mb-3">{t('footer.contact')}</h4>
-              <ul className="text-gray-400 space-y-2">
+              <h4 className="text-lg font-semibold mb-3 text-fisher-accent">{t('footer.contact')}</h4>
+              <ul className="text-gray-300 space-y-2 text-sm">
                 <li>info@dionisocaffe.it</li>
                 <li>+39 02 1234567</li>
                 <li>Via Esempio 123, Milano</li>
@@ -28,7 +28,7 @@ export default function Footer() {
             </div>
             
             <div>
-              <h4 className="text-lg font-semibold mb-3">{t('footer.follow')}</h4>
+              <h4 className="text-lg font-semibold mb-3 text-fisher-accent">{t('footer.follow')}</h4>
               <div className="flex space-x-4">
                 <a href="#" className="text-white hover:text-fisher-gold transition">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -49,8 +49,8 @@ export default function Footer() {
             </div>
             
             <div>
-              <h4 className="text-lg font-semibold mb-3">{t('footer.info')}</h4>
-              <ul className="text-gray-400 space-y-2">
+              <h4 className="text-lg font-semibold mb-3 text-fisher-accent">{t('footer.info')}</h4>
+              <ul className="text-gray-300 space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition">{t('footer.privacy')}</a></li>
                 <li><a href="#" className="hover:text-white transition">{t('footer.terms')}</a></li>
                 <li><a href="#" className="hover:text-white transition">{t('footer.faq')}</a></li>
@@ -59,10 +59,10 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="mt-8 pt-6 border-t border-gray-700">
+        <div className="mt-8 pt-6 border-t border-opacity-20 border-white">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">{t('footer.copyright')}</p>
-            <span className="font-playfair italic text-fisher-gray mt-2 md:mt-0">Fisher</span>
+            <p className="text-sm text-gray-300">{t('footer.copyright')}</p>
+            <span className="font-playfair italic text-fisher-accent font-semibold mt-2 md:mt-0">Fisher</span>
           </div>
         </div>
       </div>

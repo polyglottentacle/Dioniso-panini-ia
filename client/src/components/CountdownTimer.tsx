@@ -49,8 +49,8 @@ export default function CountdownTimer() {
   }, []);
   
   return (
-    <div className={`text-sm font-medium px-3 py-1 rounded-full ${timerClass}`}>
-      {t('header.countdown')} ({timeLeft.hours}h {timeLeft.minutes}m)
+    <div className={`text-sm font-medium px-3 py-1 rounded-full shadow-sm ${timerClass}`}>
+      {t('header.countdown')} <span className="font-semibold">({timeLeft.hours}h {timeLeft.minutes}m)</span>
     </div>
   );
 }

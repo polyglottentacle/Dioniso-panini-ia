@@ -70,20 +70,30 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
               <p className="text-gray-500 text-sm mt-1">{t('whatsapp.subtitle')}</p>
             </div>
             
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <p className="text-sm">{t('whatsapp.message')}</p>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
+              <p className="text-sm font-medium mb-2">{t('whatsapp.message')}</p>
               
               {cartItems.map(item => (
-                <p key={item.product.id} className="text-sm mt-2">
-                  {item.quantity}x {getProductName(item)} - {formatCurrency(item.product.price * item.quantity)}
+                <p key={item.product.id} className="text-sm mt-2 flex justify-between">
+                  <span>{item.quantity}x {getProductName(item)}</span>
+                  <span className="font-medium">{formatCurrency(item.product.price * item.quantity)}</span>
                 </p>
               ))}
               
-              <p className="text-sm font-medium mt-3">{t('cart.total')}: {formatCurrency(total)}</p>
-              <p className="text-sm mt-2">{t('whatsapp.delivery', { floor, time })}</p>
+              <div className="h-px bg-gray-200 my-3"></div>
+              
+              <p className="text-sm font-bold mt-3 flex justify-between">
+                <span>{t('cart.total')}:</span>
+                <span>{formatCurrency(total)}</span>
+              </p>
+              
+              <p className="text-sm mt-3 text-gray-700">{t('whatsapp.delivery', { floor, time })}</p>
               
               {notes && (
-                <p className="text-sm mt-2">{t('cart.notes')}: {notes}</p>
+                <div className="mt-3 bg-white p-2 rounded border border-gray-100">
+                  <p className="text-xs text-gray-500">{t('cart.notes')}:</p>
+                  <p className="text-sm">{notes}</p>
+                </div>
               )}
             </div>
             
@@ -98,7 +108,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-2 bg-green-500 text-white rounded-lg font-medium text-center hover:bg-green-600 transition"
+                className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
               >
                 {t('whatsapp.open')}
               </a>
