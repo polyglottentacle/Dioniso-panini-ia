@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { MenuPreference, WeekDay, DeliveryTime } from "@/lib/data";
+import { MenuPreference, DeliveryTime } from "@/lib/data";
 import { motion } from "framer-motion";
 
 export default function Subscription() {
@@ -8,17 +8,7 @@ export default function Subscription() {
   
   // State for subscription preferences
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
-  const [preferredDays, setPreferredDays] = useState<WeekDay[]>([]);
   const [preferredTime, setPreferredTime] = useState<DeliveryTime>('11:00');
-  
-  // Handle checkbox toggle for days
-  const toggleDay = (day: WeekDay) => {
-    if (preferredDays.includes(day)) {
-      setPreferredDays(preferredDays.filter(d => d !== day));
-    } else {
-      setPreferredDays([...preferredDays, day]);
-    }
-  };
   
   return (
     <section className="my-16 bg-gradient-to-r from-fisher-blue to-fisher-blue-dark rounded-xl overflow-hidden shadow-xl">
@@ -75,64 +65,12 @@ export default function Subscription() {
               <option value="standard">{t('subscription.menuType.standard')}</option>
               <option value="vegetarian">{t('subscription.menuType.vegetarian')}</option>
               <option value="halal">{t('subscription.menuType.halal')}</option>
-              <option value="glutenFree">{t('subscription.menuType.glutenFree')}</option>
             </select>
           </div>
           
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('subscription.days')}</label>
-            <div className="grid grid-cols-5 gap-2">
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="monday" 
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                  checked={preferredDays.includes('mon')}
-                  onChange={() => toggleDay('mon')}
-                />
-                <label htmlFor="monday" className="text-sm">{t('subscription.day.mon')}</label>
-              </div>
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="tuesday" 
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                  checked={preferredDays.includes('tue')}
-                  onChange={() => toggleDay('tue')}
-                />
-                <label htmlFor="tuesday" className="text-sm">{t('subscription.day.tue')}</label>
-              </div>
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="wednesday" 
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                  checked={preferredDays.includes('wed')}
-                  onChange={() => toggleDay('wed')}
-                />
-                <label htmlFor="wednesday" className="text-sm">{t('subscription.day.wed')}</label>
-              </div>
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="thursday" 
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                  checked={preferredDays.includes('thu')}
-                  onChange={() => toggleDay('thu')}
-                />
-                <label htmlFor="thursday" className="text-sm">{t('subscription.day.thu')}</label>
-              </div>
-              <div className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  id="friday" 
-                  className="mr-2 h-4 w-4 rounded border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                  checked={preferredDays.includes('fri')}
-                  onChange={() => toggleDay('fri')}
-                />
-                <label htmlFor="friday" className="text-sm">{t('subscription.day.fri')}</label>
-              </div>
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Giorni di consegna</label>
+            <p className="text-gray-600 text-sm">Dal lunedì al venerdì (5 giorni)</p>
           </div>
           
           <div className="mb-6">

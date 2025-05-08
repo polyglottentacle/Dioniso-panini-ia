@@ -41,7 +41,7 @@ export interface User {
   loyaltyLevel: 'bronze' | 'silver' | 'gold';
 }
 
-export type MenuPreference = 'standard' | 'vegetarian' | 'halal' | 'glutenFree';
+export type MenuPreference = 'standard' | 'vegetarian' | 'halal';
 export type WeekDay = 'mon' | 'tue' | 'wed' | 'thu' | 'fri';
 export type DeliveryTime = '11:00' | '17:00';
 
@@ -142,7 +142,7 @@ export const products: Product[] = [
     descriptionEn: 'Buffalo mozzarella, beef tomato, fresh basil and extra virgin olive oil on focaccia',
     descriptionEs: 'Mozzarella de búfala, tomate corazón de buey, albahaca fresca y aceite de oliva virgen extra en focaccia',
     price: 10.00,
-    imageUrl: 'https://cdn.pixabay.com/photo/2017/05/05/19/06/tomato-mozzarella-2287859_1280.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: true,
     isCustomizable: false
@@ -280,7 +280,7 @@ export const products: Product[] = [
     descriptionEn: 'Beef sirloin with arugula, parmesan and balsamic vinegar',
     descriptionEs: 'Solomillo de ternera con rúcula, parmesano y vinagre balsámico',
     price: 18.00,
-    imageUrl: 'https://images.unsplash.com/photo-1600891964068-3b1ea9fbce82?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
+    imageUrl: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: false,
     isCustomizable: true
@@ -296,7 +296,7 @@ export const products: Product[] = [
     descriptionEn: 'Oven-roasted potatoes with rosemary and garlic',
     descriptionEs: 'Patatas al horno con romero y ajo',
     price: 4.50,
-    imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
+    imageUrl: 'https://images.unsplash.com/photo-1581004705471-d5a9818a657c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400',
     isPopular: false,
     isVegetarian: true,
     isCustomizable: false
