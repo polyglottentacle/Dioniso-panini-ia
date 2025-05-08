@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="mb-6 md:mb-0">
             <div className="flex items-center mb-4">
               <h3 className="text-xl font-bold">Dioniso Caffè</h3>
-              <span className="font-playfair italic ml-2 text-fisher-accent">Fisher Edition</span>
+              <span className="font-playfair italic ml-2 text-fisher-accent">A.S.F. Fischer BV</span>
             </div>
             <p className="text-gray-300 text-sm max-w-md">
               {t('footer.description')}
@@ -21,9 +21,9 @@ export default function Footer() {
             <div>
               <h4 className="text-lg font-semibold mb-3 text-fisher-accent">{t('footer.contact')}</h4>
               <ul className="text-gray-300 space-y-2 text-sm">
-                <li>info@dionisocaffe.it</li>
-                <li>+39 02 1234567</li>
-                <li>Via Esempio 123, Milano</li>
+                <li>A.S.F. Fischer BV</li>
+                <li>+31 619311373</li>
+                <li>Lelystad, Netherlands</li>
               </ul>
             </div>
             
@@ -62,7 +62,7 @@ export default function Footer() {
         <div className="mt-8 pt-6 border-t border-opacity-20 border-white">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-300">{t('footer.copyright')}</p>
-            <span className="font-playfair italic text-fisher-accent font-semibold mt-2 md:mt-0">Fisher</span>
+            <span className="font-playfair italic text-fisher-accent font-semibold mt-2 md:mt-0">A.S.F. Fischer BV</span>
           </div>
         </div>
       </div>

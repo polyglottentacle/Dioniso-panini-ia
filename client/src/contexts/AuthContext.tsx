@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { User } from "@/lib/data";
-import { signInWithGoogle, logoutUser, getCurrentUser } from "@/lib/firebase";
+import { signInWithGoogle, logoutUser, getCurrentUser, handleRedirectResult } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;
@@ -20,11 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Controlla se l'utente è già autenticato all'avvio
+  // Controlla se l'utente è già autenticato all'avvio e gestisce il redirect
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const firebaseUser = await getCurrentUser();
+        // Verifica se c'è un risultato del redirect
+        const redirectUser = await handleRedirectResult();
+        const firebaseUser = redirectUser || await getCurrentUser();
         
         if (firebaseUser && firebaseUser.email) {
           // Invia le informazioni del firebaseUser al nostro backend
@@ -62,35 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async () => {
     try {
       setLoading(true);
-      const firebaseUser = await signInWithGoogle();
-      
-      if (firebaseUser) {
-        // Invia le informazioni del firebaseUser al nostro backend
-        const response = await fetch('/api/users/firebase-auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error('Errore nella risposta del server');
-        }
-        
-        // Ottieni il nostro utente dal database
-        const appUser = await response.json();
-        setUser(appUser);
-      }
+      // signInWithGoogle adesso effettua solo il redirect, non restituisce nulla
+      await signInWithGoogle();
+      // L'utente sarà autenticato quando tornerà al sito e verrà gestito in useEffect
     } catch (error) {
       console.error("Errore durante il login:", error);
-      throw error;
-    } finally {
       setLoading(false);
+      throw error;
     }
   };
   
