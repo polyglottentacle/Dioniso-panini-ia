@@ -136,36 +136,18 @@ export default function Cart() {
                     ></textarea>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('cart.floor')}
-                      </label>
-                      <select 
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={floor}
-                        onChange={(e) => setFloor(e.target.value)}
-                      >
-                        <option value="Piano 1">Piano 1</option>
-                        <option value="Piano 2">Piano 2</option>
-                        <option value="Piano 3">Piano 3</option>
-                        <option value="Piano 4">Piano 4</option>
-                        <option value="Piano 5">Piano 5</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('cart.time')}
-                      </label>
-                      <select
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={deliveryTime}
-                        onChange={(e) => setDeliveryTime(e.target.value)}
-                      >
-                        <option value="11:00">11:00</option>
-                        <option value="17:00">17:00</option>
-                      </select>
-                    </div>
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t('cart.time')}
+                    </label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={deliveryTime}
+                      onChange={(e) => setDeliveryTime(e.target.value)}
+                    >
+                      <option value="11:00">11:00</option>
+                      <option value="17:00">17:00</option>
+                    </select>
                   </div>
                   
                   <div className="border-t border-b py-4 space-y-2 mb-6">

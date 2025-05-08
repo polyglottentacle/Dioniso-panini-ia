@@ -54,58 +54,10 @@ export default function Header() {
             <div className="flex items-center space-x-4">
               <LanguageSwitcher />
               
-              {loading ? (
-                <div className="w-8 h-8 rounded-full animate-pulse bg-gray-200"></div>
-              ) : !user ? (
-                <button 
-                  onClick={handleLogin}
-                  className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue hover:bg-fisher-gray transition"
-                  disabled={loading}
-                >
-                  <img 
-                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-                    alt="Google logo" 
-                    className="w-4 h-4" 
-                  />
-                  <span>{t('header.login')}</span>
-                </button>
-              ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium hidden md:inline">{user.displayName}</span>
-                      {user.avatar ? (
-                        <img 
-                          src={user.avatar} 
-                          alt={user.displayName}
-                          className="w-8 h-8 rounded-full border border-fisher-gray"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-fisher-blue text-white flex items-center justify-center">
-                          {user.displayName.split(' ').map(name => name[0]).join('')}
-                        </div>
-                      )}
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem disabled className="cursor-default">
-                      <div className="flex flex-col">
-                        <span className="font-semibold">{user.displayName}</span>
-                        <span className="text-xs text-gray-500">{user.email}</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem disabled className="cursor-default">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full bg-fisher-gold"></div>
-                        <span>{t('header.points', { points: user.loyaltyPoints })}</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleLogout}>
-                      {t('header.logout')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+              {/* Login funzionalità disabilitata temporaneamente */}
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue">
+                <span>A.S.F. Fischer BV</span>
+              </div>
               
               <button 
                 onClick={toggleCart}

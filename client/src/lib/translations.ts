@@ -28,7 +28,7 @@ export const translations: Translations = {
     "whatsapp.title": "Conferma il tuo ordine",
     "whatsapp.subtitle": "Completa il pagamento via WhatsApp",
     "whatsapp.message": "Ciao! Vorrei confermare il mio ordine presso Dioniso Caffè - A.S.F. Fischer BV:",
-    "whatsapp.delivery": "Consegna: Piano {floor}, ore {time}",
+    "whatsapp.delivery": "Consegna: ore {time}",
     "whatsapp.cancel": "Annulla",
     "whatsapp.open": "Apri WhatsApp",
     "nav.category1": "Panini Premium",

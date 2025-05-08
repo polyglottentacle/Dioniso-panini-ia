@@ -43,7 +43,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
     ).join('\n');
     
     const totalText = `\n${t('cart.total')}: ${formatCurrency(total)}`;
-    const deliveryText = `\n${t('whatsapp.delivery', { floor, time })}`;
+    const deliveryText = `\n${t('whatsapp.delivery', { time })}`;
     const notesText = notes ? `\n${t('cart.notes')}: ${notes}` : '';
     
     return encodeURIComponent(message + itemsText + totalText + deliveryText + notesText);
@@ -95,7 +95,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, floor
                 <span>{formatCurrency(total)}</span>
               </p>
               
-              <p className="text-sm mt-3 text-gray-700">{t('whatsapp.delivery', { floor, time })}</p>
+              <p className="text-sm mt-3 text-gray-700">{t('whatsapp.delivery', { time })}</p>
               
               {notes && (
                 <div className="mt-3 bg-white p-2 rounded border border-gray-100">
