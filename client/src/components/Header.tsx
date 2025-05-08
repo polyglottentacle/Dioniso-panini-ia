@@ -4,14 +4,36 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import CountdownTimer from "./CountdownTimer";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem 
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const { t } = useLanguage();
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, loading } = useAuth();
   const { cartItems, toggleCart } = useCart();
   
   // Calculate total items in cart
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  
+  const handleLogin = async () => {
+    try {
+      await login();
+    } catch (error) {
+      console.error("Errore durante il login:", error);
+    }
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Errore durante il logout:", error);
+    }
+  };
   
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -32,10 +54,13 @@ export default function Header() {
             <div className="flex items-center space-x-4">
               <LanguageSwitcher />
               
-              {!user ? (
+              {loading ? (
+                <div className="w-8 h-8 rounded-full animate-pulse bg-gray-200"></div>
+              ) : !user ? (
                 <button 
-                  onClick={login}
+                  onClick={handleLogin}
                   className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue hover:bg-fisher-gray transition"
+                  disabled={loading}
                 >
                   <img 
                     src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
@@ -45,12 +70,41 @@ export default function Header() {
                   <span>{t('header.login')}</span>
                 </button>
               ) : (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">{user.displayName}</span>
-                  <div className="w-8 h-8 rounded-full bg-fisher-blue text-white flex items-center justify-center">
-                    {user.displayName.split(' ').map(name => name[0]).join('')}
-                  </div>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium hidden md:inline">{user.displayName}</span>
+                      {user.avatar ? (
+                        <img 
+                          src={user.avatar} 
+                          alt={user.displayName}
+                          className="w-8 h-8 rounded-full border border-fisher-gray"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-fisher-blue text-white flex items-center justify-center">
+                          {user.displayName.split(' ').map(name => name[0]).join('')}
+                        </div>
+                      )}
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem disabled className="cursor-default">
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{user.displayName}</span>
+                        <span className="text-xs text-gray-500">{user.email}</span>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled className="cursor-default">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 rounded-full bg-fisher-gold"></div>
+                        <span>{t('header.points', { points: user.loyaltyPoints })}</span>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleLogout}>
+                      {t('header.logout')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               
               <button 
