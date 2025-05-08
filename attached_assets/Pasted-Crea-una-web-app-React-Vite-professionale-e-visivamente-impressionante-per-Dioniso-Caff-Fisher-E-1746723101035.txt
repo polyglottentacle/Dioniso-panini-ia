@@ -1,0 +1,70 @@
+Crea una web app React+Vite professionale e visivamente impressionante per "Dioniso Caffè - Fisher Edition", un servizio di food delivery aziendale personalizzato. La demo deve essere VISIVAMENTE COMPLETA e SORPRENDENTE per una presentazione immediata ai clienti presenti.
+
+## Specifiche Tecniche
+- React + Vite con Tailwind CSS
+- Design responsive mobile-first con transizioni fluide
+- Stile visivo basato sul brand Fisher (colori dominanti: blu #0047AB, grigio #D3D3D3)
+- Logo Fisher discretamente integrato nell'header e nel footer (in corsivo, elegante)
+- MULTILINGUA COMPLETA: Italiano (default), Inglese e Spagnolo - implementa un selettore lingua ben visibile
+
+## Componenti Chiave (Tutti Visivamente Completati)
+
+### 1. Header Premium
+- Logo "Dioniso Caffè" primario con sottotitolo "Fisher Edition" in corsivo elegante
+- Timer countdown dinamico "Ordina entro le 16:00 per consegna domani" (rosso se <30min, giallo se <2h, verde altrimenti)
+- Selettore lingua: 🇮🇹 IT | 🇬🇧 EN | 🇪🇸 ES
+- Pulsante login Google con effetto hover
+
+### 2. Home/Menu
+- Hero section con immagine di alta qualità di cibo italiano
+- Categorie con tabs/pills: "Panini Premium", "Primi Piatti", "Secondi Gourmet", "Contorni", "Bevande"
+- Ogni prodotto con:
+  * Immagine professionale (usa immagini realistiche di alta qualità)
+  * Nome e descrizione bilingue
+  * Badge "Popolare"/"Popular"/"Popular" su alcuni prodotti
+  * Prezzo in evidenza
+  * Pulsante "Aggiungi"/"Add"/"Añadir" con animazione
+  * Opzione personalizzazione (per alcuni prodotti)
+
+### 3. Carrello Sofisticato
+- Slide-in su desktop, modal su mobile
+- Riepilogo completo con foto miniatura per ogni prodotto
+- Counter interattivo per quantità
+- Sezione specifica per:
+  * Note/richieste ("Senza cipolla", ecc.)
+  * Selezione piano/ufficio (dropdown con "Piano 1" fino a "Piano 5")
+  * Selezione orario: 11:00 o 17:00
+- Calcolo dettagliato: Subtotale, IVA, Sconto (se applicabile), Totale
+- Pulsante CTA "Paga via WhatsApp" grande e visibile
+
+### 4. Abbonamento Premium (Sezione Distinta)
+- Card visivamente attraente: "Abbonamento Settimanale Executive"
+- Prezzo in evidenza: "€45/settimana (5 pasti)"
+- Opzioni selezione in UI elegante:
+  * Preferenza menu: Standard / Vegetariano / Halal / Senza Glutine
+  * Giorni preferiti (checkbox multi-select)
+  * Orario preferito (11:00/17:00)
+- Box vantaggi: "Risparmio 15%", "Priorità", "Personalizzazione"
+- Pulsante grande "Attiva Abbonamento"
+
+### 5. Loyalty Program
+- Sezione speciale "Fisher Rewards"
+- Card loyalty virtuale con:
+  * Livello utente (Bronze/Silver/Gold)
+  * Punti accumulati (visualizzazione grafica)
+  * Prossimi reward disponibili
+- Timeline benefici per ciascun livello
+
+### 6. Footer Professionale
+- Logo Fisher in corsivo (piccolo ma visibile)
+- Social media icons
+- Info legali e privacy
+- Copyright "Realizzato per Fisher da Dioniso Caffè © 2025"
+
+## Simulazioni UI da Implementare
+- Login con Google: al click, mostra header personalizzato con nome utente "Marco Fischer" e avatar
+- Aggiunta al carrello: animazione fluida e aggiornamento counter
+- Click "Paga via WhatsApp": mostra modal con anteprima messaggio WhatsApp e pulsante "Apri WhatsApp"
+- Cambio lingua: traduzione completa di TUTTI i testi dell'interfaccia
+
+IMPORTANTE: Questo è un progetto REALE con clienti PRESENTI durante la demo. Crea l'interfaccia più impressionante e completa possibile, con particolare attenzione ai dettagli visivi, animazioni fluide e completezza dell'esperienza utente.
