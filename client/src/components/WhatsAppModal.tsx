@@ -30,10 +30,8 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
   const { clearCart, toggleCart } = useCart();
   const { toast } = useToast();
   
-  // Stato per le informazioni di contatto
+  // Stato per il numero d'ordine
   const [orderNumber, setOrderNumber] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
   
   // Genera un numero d'ordine quando il modale viene aperto
   useEffect(() => {
@@ -62,10 +60,8 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
   const generateWhatsAppMessage = () => {
     const message = `${t('whatsapp.message')}\n\n`;
     
-    // Aggiunge numero d'ordine e info cliente
-    const orderInfo = `*Ordine #${orderNumber}*\n`;
-    const customerInfo = customerName ? `Nome: ${customerName}\n` : '';
-    const emailInfo = customerEmail ? `Email: ${customerEmail}\n\n` : '\n';
+    // Aggiunge solo il numero d'ordine 
+    const orderInfo = `*Ordine #${orderNumber}*\n\n`;
     
     const itemsText = cartItems.map(item => 
       `${item.quantity}x ${getProductName(item)} - ${formatCurrency(item.product.price * item.quantity)}`
@@ -75,7 +71,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
     const deliveryText = `\n${t('whatsapp.delivery', { time })}`;
     const notesText = notes ? `\n${t('cart.notes')}: ${notes}` : '';
     
-    return encodeURIComponent(orderInfo + customerInfo + emailInfo + message + itemsText + totalText + deliveryText + notesText);
+    return encodeURIComponent(orderInfo + message + itemsText + totalText + deliveryText + notesText);
   };
   
   // WhatsApp phone number
@@ -108,33 +104,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
             </div>
             
             <div className="mb-4">
-              <p className="text-sm font-medium mb-2 text-fisher-blue-dark">Informazioni per l'ordine #{orderNumber}</p>
-              
-              <div className="space-y-3">
-                <div>
-                  <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                  <input 
-                    type="text" 
-                    id="customerName"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-fisher-accent focus:border-fisher-accent"
-                    placeholder="Inserisci il tuo nome"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="customerEmail" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input 
-                    type="email" 
-                    id="customerEmail"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-fisher-accent focus:border-fisher-accent"
-                    placeholder="Inserisci la tua email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+              <p className="text-sm font-medium mb-2 text-fisher-blue-dark">Ordine #{orderNumber}</p>
             </div>
             
             <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
@@ -171,39 +141,29 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
               >
                 {t('whatsapp.cancel')}
               </button>
-              {customerName ? (
-                <a 
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
-                  onClick={() => {
-                    // Completa l'ordine pulendo il carrello e chiudendo il modale
-                    setTimeout(() => {
-                      clearCart();
-                      onClose();
-                      toggleCart();
-                      
-                      // Mostra un toast di conferma
-                      toast({
-                        title: t('cart.orderSuccess'),
-                        description: t('cart.orderSuccessMessage'),
-                        variant: "default",
-                      });
-                    }, 500);
-                  }}
-                >
-                  {t('whatsapp.open')}
-                </a>
-              ) : (
-                <button
-                  className="flex-1 py-2 bg-gray-400 text-white rounded-lg font-medium text-center cursor-not-allowed"
-                  disabled
-                  title="Inserisci il tuo nome per continuare"
-                >
-                  {t('whatsapp.open')}
-                </button>
-              )}
+              <a 
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
+                onClick={() => {
+                  // Completa l'ordine pulendo il carrello e chiudendo il modale
+                  setTimeout(() => {
+                    clearCart();
+                    onClose();
+                    toggleCart();
+                    
+                    // Mostra un toast di conferma
+                    toast({
+                      title: t('cart.orderSuccess'),
+                      description: t('cart.orderSuccessMessage'),
+                      variant: "default",
+                    });
+                  }, 500);
+                }}
+              >
+                {t('whatsapp.open')}
+              </a>
             </div>
           </motion.div>
         </motion.div>

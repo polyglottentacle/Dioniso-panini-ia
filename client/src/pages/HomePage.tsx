@@ -4,7 +4,6 @@ import HeroSection from "@/components/HeroSection";
 import CategoryTabs from "@/components/CategoryTabs";
 import ProductGrid from "@/components/ProductGrid";
 import Subscription from "@/components/Subscription";
-import LoyaltyProgram from "@/components/LoyaltyProgram";
 import Footer from "@/components/Footer";
 import Cart from "@/components/Cart";
 import { categories } from "@/lib/data";
@@ -25,7 +24,6 @@ export default function HomePage() {
         />
         <ProductGrid categoryId={activeCategory} />
         <Subscription />
-        <LoyaltyProgram />
       </main>
       
       <Footer />
