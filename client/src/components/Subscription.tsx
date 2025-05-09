@@ -167,30 +167,8 @@ export default function Subscription() {
             <p className="text-lg opacity-90 mb-4">{t('subscription.subtitle')}</p>
             
             <div className="bg-white/10 rounded-xl p-4 mb-5">
-              {language === 'it' && (
-                <>
-                  <p className="text-lg font-semibold mb-2">Stanco di dover pensare cosa mangiare durante le tue pause?</p>
-                  <p className="text-base">Ci pensiamo noi con la nostra promozione premium. 5 giorni, 5 panini diversi in base ai tuoi gusti!</p>
-                </>
-              )}
-              {language === 'en' && (
-                <>
-                  <p className="text-lg font-semibold mb-2">Tired of deciding what to eat during your breaks?</p>
-                  <p className="text-base">We take care of it with our premium promotion. 5 days, 5 different sandwiches based on your preferences!</p>
-                </>
-              )}
-              {language === 'es' && (
-                <>
-                  <p className="text-lg font-semibold mb-2">¿Cansado de pensar qué comer durante tus descansos?</p>
-                  <p className="text-base">Nosotros nos encargamos con nuestra promoción premium. ¡5 días, 5 sándwiches diferentes según tus gustos!</p>
-                </>
-              )}
-              {language === 'nl' && (
-                <>
-                  <p className="text-lg font-semibold mb-2">Moe van het bedenken wat te eten tijdens je pauzes?</p>
-                  <p className="text-base">Wij zorgen ervoor met onze premium aanbieding. 5 dagen, 5 verschillende broodjes op basis van jouw voorkeuren!</p>
-                </>
-              )}
+              <p className="text-lg font-semibold mb-2">{t('subscription.introTitle')}</p>
+              <p className="text-base">{t('subscription.introText')}</p>
             </div>
             
             <div className="relative mb-6 overflow-hidden rounded-lg">
