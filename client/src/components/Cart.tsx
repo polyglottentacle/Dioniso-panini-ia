@@ -5,7 +5,7 @@ import WhatsAppModal from "./WhatsAppModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartItem } from "@/lib/data";
 
-function Cart() {
+export default function Cart() {
   const { t, language } = useLanguage();
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateCartItemQuantity } = useCart();
   
@@ -162,19 +162,19 @@ function Cart() {
                   <div className="border-t border-b py-4 space-y-2 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('cart.subtotal')}</span>
-                      <span>{formatCurrency(subtotal)}</span>
+                      <span>{formatCurrency(cartCalculations.subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('cart.vat')}</span>
-                      <span>{formatCurrency(vat)}</span>
+                      <span>{formatCurrency(cartCalculations.vat)}</span>
                     </div>
                     <div className="flex justify-between text-sm text-green-600">
                       <span>{t('cart.discount')}</span>
-                      <span>-{formatCurrency(discount)}</span>
+                      <span>-{formatCurrency(cartCalculations.discount)}</span>
                     </div>
                     <div className="flex justify-between font-bold pt-2">
                       <span>{t('cart.total')}</span>
-                      <span>{formatCurrency(total)}</span>
+                      <span>{formatCurrency(cartCalculations.total)}</span>
                     </div>
                   </div>
                   
@@ -201,7 +201,7 @@ function Cart() {
         isOpen={showWhatsAppModal} 
         onClose={() => setShowWhatsAppModal(false)}
         cartItems={cartItems}
-        total={total}
+        total={cartCalculations.total}
         time={deliveryTime}
         notes={notes}
       />
