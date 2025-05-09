@@ -12,13 +12,17 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   
   // Get name and description for current language
-  const productName = language === 'it' ? product.nameIt : 
-                      language === 'en' ? product.nameEn : 
-                      product.nameEs;
+  let productName = product.nameEn; // Default to English
+  if (language === 'it') productName = product.nameIt;
+  else if (language === 'en') productName = product.nameEn;
+  else if (language === 'es') productName = product.nameEs;
+  else if (language === 'nl') productName = product.nameEn; // Per l'olandese usiamo English
                       
-  const productDescription = language === 'it' ? product.descriptionIt : 
-                             language === 'en' ? product.descriptionEn : 
-                             product.descriptionEs;
+  let productDescription = product.descriptionEn; // Default to English
+  if (language === 'it') productDescription = product.descriptionIt;
+  else if (language === 'en') productDescription = product.descriptionEn;
+  else if (language === 'es') productDescription = product.descriptionEs;
+  else if (language === 'nl') productDescription = product.descriptionEn; // Per l'olandese usiamo English
   
   // Format price
   const formattedPrice = `€${product.price.toFixed(2)}`;

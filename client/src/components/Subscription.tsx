@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MenuPreference, DeliveryTime } from "@/lib/data";
 import { motion } from "framer-motion";
@@ -8,9 +8,10 @@ export default function Subscription() {
   const { t } = useLanguage();
   const { toast } = useToast();
   
-  // State for subscription preferences
+  // State for subscription preferences and WhatsApp URL
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
   const [preferredTime, setPreferredTime] = useState<DeliveryTime>('11:00');
+  const [whatsappURL, setWhatsappURL] = useState('');
   
   // Funzione per inviare l'ordine dell'abbonamento a WhatsApp
   const sendSubscriptionToWhatsApp = () => {
@@ -38,14 +39,14 @@ export default function Subscription() {
     // Creare il link WhatsApp
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
-    // Aprire WhatsApp in una nuova finestra/tab
-    window.open(whatsappURL, '_blank');
-    
     // Mostrare messaggio di conferma
     toast({
       title: "Abbonamento attivato!",
       description: "La tua richiesta è stata inviata via WhatsApp.",
     });
+    
+    // Aprire WhatsApp in una nuova finestra/tab
+    window.location.href = whatsappURL;
   };
   
   return (
