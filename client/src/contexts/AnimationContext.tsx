@@ -3,32 +3,11 @@ import { AnimatePresence, motion } from "framer-motion";
 
 // Definizione del tipo di contesto per le animazioni
 interface AnimationContextType {
-  pageTransition: {
-    initial: object;
-    animate: object;
-    exit: object;
-    transition: object;
-  };
-  fadeIn: {
-    initial: object;
-    animate: object;
-    transition: object;
-  };
-  slideUp: {
-    initial: object;
-    animate: object;
-    transition: object;
-  };
-  staggerChildren: {
-    initial: object;
-    animate: object;
-    transition: object;
-  };
-  childVariants: {
-    initial: object;
-    animate: object;
-    transition: object;
-  };
+  pageTransition: any;
+  fadeIn: any;
+  slideUp: any;
+  staggerChildren: any;
+  childVariants: any;
   animationsEnabled: boolean;
   toggleAnimations: () => void;
 }

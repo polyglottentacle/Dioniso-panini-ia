@@ -75,7 +75,11 @@ export const translations: Translations = {
     "footer.description": "Il servizio di food delivery aziendale personalizzato per le aziende che vogliono offrire un'esperienza gastronomica di qualità ai propri dipendenti.",
     "animation.enable": "Attiva animazioni",
     "animation.disable": "Disattiva animazioni",
-    "animation.title": "Effetti visivi"
+    "animation.title": "Effetti visivi",
+    "favorites.add": "Aggiungi ai preferiti",
+    "favorites.remove": "Rimuovi dai preferiti",
+    "favorites.title": "I tuoi panini preferiti",
+    "favorites.empty": "Non hai ancora preferiti. Clicca sul cuore sui prodotti per aggiungerli qui!"
   },
   "en": {
     "header.countdown": "Order before 4:00 PM for delivery tomorrow",
@@ -145,7 +149,11 @@ export const translations: Translations = {
     "footer.description": "The personalized corporate food delivery service for companies that want to offer a quality gastronomic experience to their employees.",
     "animation.enable": "Enable animations",
     "animation.disable": "Disable animations",
-    "animation.title": "Visual effects"
+    "animation.title": "Visual effects",
+    "favorites.add": "Add to favorites",
+    "favorites.remove": "Remove from favorites",
+    "favorites.title": "Your favorite sandwiches",
+    "favorites.empty": "You don't have any favorites yet. Click the heart on products to add them here!"
   },
   "es": {
     "header.countdown": "Ordena antes de las 16:00 para entrega mañana",
@@ -215,7 +223,11 @@ export const translations: Translations = {
     "footer.description": "El servicio de entrega de comida corporativo personalizado para empresas que desean ofrecer una experiencia gastronómica de calidad a sus empleados.",
     "animation.enable": "Activar animaciones",
     "animation.disable": "Desactivar animaciones",
-    "animation.title": "Efectos visuales"
+    "animation.title": "Efectos visuales",
+    "favorites.add": "Añadir a favoritos",
+    "favorites.remove": "Eliminar de favoritos",
+    "favorites.title": "Tus sándwiches favoritos",
+    "favorites.empty": "Aún no tienes favoritos. ¡Haz clic en el corazón de los productos para añadirlos aquí!"
   },
   "nl": {
     "header.countdown": "Bestel vóór 16:00 voor levering morgen",
@@ -282,7 +294,10 @@ export const translations: Translations = {
     "footer.terms": "Algemene Voorwaarden",
     "footer.faq": "FAQ",
     "footer.copyright": "Gemaakt voor Fisher door Dioniso Caffè © 2025",
-    "footer.description": "De gepersonaliseerde bedrijfscateringservice voor bedrijven die hun medewerkers een kwalitatieve gastronomische ervaring willen bieden."
+    "footer.description": "De gepersonaliseerde bedrijfscateringservice voor bedrijven die hun medewerkers een kwalitatieve gastronomische ervaring willen bieden.",
+    "animation.enable": "Animaties inschakelen",
+    "animation.disable": "Animaties uitschakelen",
+    "animation.title": "Visuele effecten"
   }
 };
 

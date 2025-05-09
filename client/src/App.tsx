@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AnimationProvider, PageTransition } from "@/contexts/AnimationContext";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AnimationToggle from "@/components/AnimationToggle";
 import HomePage from "@/pages/HomePage";
 import NotFound from "@/pages/not-found";
@@ -43,13 +44,15 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <CartProvider>
-            <AnimationProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Router />
-                <AnimationToggle />
-              </TooltipProvider>
-            </AnimationProvider>
+            <FavoritesProvider>
+              <AnimationProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Router />
+                  <AnimationToggle />
+                </TooltipProvider>
+              </AnimationProvider>
+            </FavoritesProvider>
           </CartProvider>
         </AuthProvider>
       </LanguageProvider>
