@@ -43,9 +43,7 @@ export default function Header() {
             <h1 className="text-2xl md:text-3xl font-bold text-fisher-blue">
               Dioniso Caffè
             </h1>
-            <span className="font-playfair italic text-lg text-fisher-accent">
-              A.S.F. Fischer BV
-            </span>
+
           </div>
           
           <div className="flex flex-col items-center md:items-end space-y-2">
@@ -56,7 +54,7 @@ export default function Header() {
               
               {/* Login funzionalità disabilitata temporaneamente */}
               <div className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue">
-                <span>A.S.F. Fischer BV</span>
+                <span>Fisher</span>
               </div>
               
               <button 
