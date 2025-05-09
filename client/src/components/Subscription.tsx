@@ -8,10 +8,9 @@ export default function Subscription() {
   const { t } = useLanguage();
   const { toast } = useToast();
   
-  // State for subscription preferences and WhatsApp URL
+  // State for subscription preferences
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
   const [preferredTime, setPreferredTime] = useState<DeliveryTime>('11:00');
-  const [whatsappURL, setWhatsappURL] = useState('');
   
   // Funzione per inviare l'ordine dell'abbonamento a WhatsApp
   const sendSubscriptionToWhatsApp = () => {
