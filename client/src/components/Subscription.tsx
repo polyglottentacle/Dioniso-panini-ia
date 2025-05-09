@@ -199,20 +199,20 @@ export default function Subscription() {
                 alt="Beef Steak Slice" 
                 className="w-full h-40 object-cover"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-fisher-blue-dark to-transparent px-4 py-3">
-                <p className="text-3xl font-bold">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-4 py-3">
+                <p className="text-3xl font-bold text-white">
                   {language === 'it' && "€55/settimana"}
                   {language === 'en' && "€55/week"}
                   {language === 'es' && "€55/semana"}
                   {language === 'nl' && "€55/week"}
                 </p>
-                <p className="bg-white/20 px-3 py-1 rounded-md inline-block text-sm font-medium">
+                <p className="bg-fisher-gold px-3 py-1 rounded-md inline-block text-sm font-medium text-fisher-blue-dark">
                   {language === 'it' && "5 panini + 5 bevande incluse"}
                   {language === 'en' && "5 sandwiches + 5 drinks included"}
                   {language === 'es' && "5 sándwiches + 5 bebidas incluidas"}
                   {language === 'nl' && "5 broodjes + 5 drankjes inbegrepen"}
                 </p>
-                <p className="text-sm opacity-90 mt-1">
+                <p className="text-sm text-white mt-1">
                   {language === 'it' && "Sconto del 15% sul prezzo standard"}
                   {language === 'en' && "15% discount on standard price"}
                   {language === 'es' && "15% de descuento sobre el precio estándar"}
