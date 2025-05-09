@@ -6,6 +6,7 @@ import ProductGrid from "@/components/ProductGrid";
 import Subscription from "@/components/Subscription";
 import Footer from "@/components/Footer";
 import Cart from "@/components/Cart";
+import FavoritesSection from "@/components/FavoritesSection";
 import { categories } from "@/lib/data";
 
 // Memorizziamo i componenti per evitare re-render inutili

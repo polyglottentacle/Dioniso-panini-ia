@@ -1,8 +1,10 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { Product } from "@/lib/data";
 import { motion } from "framer-motion";
 import { memo, useMemo, useCallback } from "react";
+import { Heart } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +13,7 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   const { language, t } = useLanguage();
   const { addToCart } = useCart();
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   
   // Memorizziamo il nome e la descrizione del prodotto nella lingua corrente
   const productTexts = useMemo(() => {
@@ -43,6 +46,17 @@ function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = useCallback(() => {
     addToCart(product);
   }, [addToCart, product]);
+  
+  // Gestione dei preferiti
+  const isProductFavorite = useMemo(() => isFavorite(product.id), [isFavorite, product.id]);
+  
+  const toggleFavorite = useCallback(() => {
+    if (isProductFavorite) {
+      removeFavorite(product.id);
+    } else {
+      addFavorite(product.id);
+    }
+  }, [isProductFavorite, addFavorite, removeFavorite, product.id]);
   
   // Memorizziamo il componente badge
   const PopularBadge = useMemo(() => {
@@ -79,7 +93,7 @@ function ProductCard({ product }: ProductCardProps) {
   
   return (
     <motion.div 
-      className="product-card bg-white rounded-xl shadow-md overflow-hidden"
+      className="product-card bg-white rounded-xl shadow-md overflow-hidden relative"
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
     >
@@ -89,6 +103,16 @@ function ProductCard({ product }: ProductCardProps) {
         className="w-full h-48 object-cover"
         loading="lazy" // Aggiungiamo lazy loading per le immagini
       />
+      <button 
+        className="absolute top-2 right-2 p-2 rounded-full bg-white/80 hover:bg-white transition-colors z-10"
+        onClick={toggleFavorite}
+        title={isProductFavorite ? t('favorites.remove') : t('favorites.add')}
+      >
+        <Heart 
+          size={20} 
+          className={isProductFavorite ? "fill-red-500 text-red-500" : "text-gray-400"} 
+        />
+      </button>
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h4 className="text-lg font-semibold">{productTexts.name}</h4>
