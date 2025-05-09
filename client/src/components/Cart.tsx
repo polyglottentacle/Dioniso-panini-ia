@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import WhatsAppModal from "./WhatsAppModal";
 import { motion, AnimatePresence } from "framer-motion";
+import { CartItem } from "@/lib/data";
 
-export default function Cart() {
+function Cart() {
   const { t, language } = useLanguage();
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateCartItemQuantity } = useCart();
   
@@ -12,14 +13,23 @@ export default function Cart() {
   const [deliveryTime, setDeliveryTime] = useState("11:00");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const vat = subtotal * 0.22;
-  const discount = 0; // Could be calculated based on loyalty level
-  const total = subtotal + vat - discount;
+  // Calculate totals - memorizziamo per evitare ricalcoli inutili
+  const cartCalculations = useMemo(() => {
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const vat = subtotal * 0.22;
+    const discount = 0; // Could be calculated based on loyalty level
+    const total = subtotal + vat - discount;
+    
+    return {
+      subtotal,
+      vat,
+      discount,
+      total
+    };
+  }, [cartItems]);
   
-  // Get product name for current language
-  const getProductName = (item: any) => {
+  // Get product name for current language - memorizziamo la funzione
+  const getProductName = useCallback((item: CartItem) => {
     switch(language) {
       case 'it': return item.product.nameIt;
       case 'en': return item.product.nameEn;
@@ -27,10 +37,10 @@ export default function Cart() {
       case 'nl': return item.product.nameEn; // Fallback to English for Dutch (as we don't have Dutch translations for products yet)
       default: return item.product.nameEn;
     }
-  };
+  }, [language]);
   
-  // Get product description for current language
-  const getProductDescription = (item: any) => {
+  // Get product description for current language - memorizziamo la funzione
+  const getProductDescription = useCallback((item: CartItem) => {
     switch(language) {
       case 'it': return item.product.descriptionIt;
       case 'en': return item.product.descriptionEn;
@@ -38,12 +48,12 @@ export default function Cart() {
       case 'nl': return item.product.descriptionEn; // Fallback to English for Dutch
       default: return item.product.descriptionEn;
     }
-  };
+  }, [language]);
   
-  // Format as currency
-  const formatCurrency = (amount: number) => {
+  // Format as currency - memorizziamo la funzione
+  const formatCurrency = useCallback((amount: number) => {
     return `€${amount.toFixed(2)}`;
-  };
+  }, []);
   
   return (
     <>
