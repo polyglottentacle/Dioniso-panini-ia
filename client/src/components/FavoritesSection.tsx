@@ -1,6 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
-import { getProductById } from "@/lib/data";
+import { getProductById, Product } from "@/lib/data";
 import { memo, useMemo } from "react";
 import ProductCard from "./ProductCard";
 import { motion } from "framer-motion";
@@ -11,9 +11,10 @@ function FavoritesSection() {
   
   // Recuperiamo i prodotti preferiti
   const favoriteProducts = useMemo(() => {
+    // Use type assertion to tell TypeScript these are all valid Product objects
     return favorites
       .map(id => getProductById(id))
-      .filter((product): product is NonNullable<typeof product> => product !== undefined);
+      .filter((product): product is Product => product !== undefined);
   }, [favorites]);
   
   // Se non ci sono preferiti, mostriamo un messaggio

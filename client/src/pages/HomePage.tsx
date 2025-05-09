@@ -13,6 +13,7 @@ import { categories } from "@/lib/data";
 const MemoizedHeroSection = memo(HeroSection);
 const MemoizedCategoryTabs = memo(CategoryTabs);
 const MemoizedProductGrid = memo(ProductGrid);
+const MemoizedFavoritesSection = memo(FavoritesSection);
 const MemoizedSubscription = memo(Subscription);
 const MemoizedFooter = memo(Footer);
 
@@ -33,6 +34,7 @@ export default function HomePage() {
       
       <main className="container mx-auto px-4 py-6 flex-grow">
         <MemoizedHeroSection />
+        <MemoizedFavoritesSection />
         <MemoizedCategoryTabs 
           categories={categoriesData} 
           activeCategory={activeCategory} 

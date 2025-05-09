@@ -297,7 +297,11 @@ export const translations: Translations = {
     "footer.description": "De gepersonaliseerde bedrijfscateringservice voor bedrijven die hun medewerkers een kwalitatieve gastronomische ervaring willen bieden.",
     "animation.enable": "Animaties inschakelen",
     "animation.disable": "Animaties uitschakelen",
-    "animation.title": "Visuele effecten"
+    "animation.title": "Visuele effecten",
+    "favorites.add": "Toevoegen aan favorieten",
+    "favorites.remove": "Verwijderen uit favorieten",
+    "favorites.title": "Je favoriete broodjes",
+    "favorites.empty": "Je hebt nog geen favorieten. Klik op het hartje bij producten om ze hier toe te voegen!"
   }
 };
 
