@@ -16,7 +16,7 @@ function SubscriptionWhatsAppModal({
   menuPreference: MenuPreference;
   preferredTime: DeliveryTime;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   
   // Genera un numero di abbonamento casuale
@@ -97,7 +97,12 @@ function SubscriptionWhatsAppModal({
                 
                 <p className="text-sm font-bold mt-3 flex justify-between">
                   <span>{t('subscription.price')}:</span>
-                  <span>€55/settimana</span>
+                  <span>
+                    {language === 'it' && "€55/settimana"}
+                    {language === 'en' && "€55/week"}
+                    {language === 'es' && "€55/semana"}
+                    {language === 'nl' && "€55/week"}
+                  </span>
                 </p>
               </div>
             </div>
@@ -139,7 +144,7 @@ function SubscriptionWhatsAppModal({
 }
 
 export default function Subscription() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   // State per le preferenze dell'abbonamento
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
@@ -159,32 +164,81 @@ export default function Subscription() {
         <div className="md:flex">
           <div className="md:w-1/2 p-8 text-white">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">{t('subscription.title')}</h2>
-            <p className="text-lg opacity-90 mb-6">{t('subscription.subtitle')}</p>
+            <p className="text-lg opacity-90 mb-4">{t('subscription.subtitle')}</p>
             
-            <div className="mb-6">
-              <p className="text-3xl font-bold mb-2">€55/settimana</p>
-              <p className="bg-white/20 px-3 py-2 rounded-md inline-block text-md font-medium">5 panini + 5 bevande incluse</p>
-              <p className="text-sm opacity-80 mt-2">Sconto del 15% sul prezzo standard</p>
+            <div className="bg-white/10 rounded-xl p-4 mb-5">
+              {language === 'it' && (
+                <>
+                  <p className="text-lg font-semibold mb-2">Stanco di dover pensare cosa mangiare durante le tue pause?</p>
+                  <p className="text-base">Ci pensiamo noi con la nostra promozione premium. 5 giorni, 5 panini diversi in base ai tuoi gusti!</p>
+                </>
+              )}
+              {language === 'en' && (
+                <>
+                  <p className="text-lg font-semibold mb-2">Tired of deciding what to eat during your breaks?</p>
+                  <p className="text-base">We take care of it with our premium promotion. 5 days, 5 different sandwiches based on your preferences!</p>
+                </>
+              )}
+              {language === 'es' && (
+                <>
+                  <p className="text-lg font-semibold mb-2">¿Cansado de pensar qué comer durante tus descansos?</p>
+                  <p className="text-base">Nosotros nos encargamos con nuestra promoción premium. ¡5 días, 5 sándwiches diferentes según tus gustos!</p>
+                </>
+              )}
+              {language === 'nl' && (
+                <>
+                  <p className="text-lg font-semibold mb-2">Moe van het bedenken wat te eten tijdens je pauzes?</p>
+                  <p className="text-base">Wij zorgen ervoor met onze premium aanbieding. 5 dagen, 5 verschillende broodjes op basis van jouw voorkeuren!</p>
+                </>
+              )}
             </div>
             
-            <div className="space-y-4 mb-8">
+            <div className="relative mb-6 overflow-hidden rounded-lg">
+              <img 
+                src="https://images.unsplash.com/photo-1615937722923-67f6deaf2cc9?q=80&w=1000&auto=format&fit=crop" 
+                alt="Beef Steak Slice" 
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-fisher-blue-dark to-transparent px-4 py-3">
+                <p className="text-3xl font-bold">
+                  {language === 'it' && "€55/settimana"}
+                  {language === 'en' && "€55/week"}
+                  {language === 'es' && "€55/semana"}
+                  {language === 'nl' && "€55/week"}
+                </p>
+                <p className="bg-white/20 px-3 py-1 rounded-md inline-block text-sm font-medium">
+                  {language === 'it' && "5 panini + 5 bevande incluse"}
+                  {language === 'en' && "5 sandwiches + 5 drinks included"}
+                  {language === 'es' && "5 sándwiches + 5 bebidas incluidas"}
+                  {language === 'nl' && "5 broodjes + 5 drankjes inbegrepen"}
+                </p>
+                <p className="text-sm opacity-90 mt-1">
+                  {language === 'it' && "Sconto del 15% sul prezzo standard"}
+                  {language === 'en' && "15% discount on standard price"}
+                  {language === 'es' && "15% de descuento sobre el precio estándar"}
+                  {language === 'nl' && "15% korting op de standaardprijs"}
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-4 mb-8 bg-white/10 p-4 rounded-lg">
               <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-fisher-gold mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>{t('subscription.benefit1')}</span>
+                <span className="font-medium">{t('subscription.benefit1')}</span>
               </div>
               <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-fisher-gold mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>{t('subscription.benefit2')}</span>
+                <span className="font-medium">{t('subscription.benefit2')}</span>
               </div>
               <div className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-fisher-gold mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>{t('subscription.benefit3')}</span>
+                <span className="font-medium">{t('subscription.benefit3')}</span>
               </div>
             </div>
           </div>
@@ -207,7 +261,13 @@ export default function Subscription() {
             
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">{t('subscription.days')}</label>
-              <p className="text-gray-600 text-sm">{t('subscription.day.mon')}-{t('subscription.day.fri')} (5 giorni)</p>
+              <p className="text-gray-600 text-sm">
+                {t('subscription.day.mon')}-{t('subscription.day.fri')} 
+                {language === 'it' && " (5 giorni)"}
+                {language === 'en' && " (5 days)"}
+                {language === 'es' && " (5 días)"}
+                {language === 'nl' && " (5 dagen)"}
+              </p>
             </div>
             
             <div className="mb-6">
