@@ -72,7 +72,10 @@ export const translations: Translations = {
     "footer.terms": "Termini e Condizioni",
     "footer.faq": "FAQ",
     "footer.copyright": "Realizzato per Fisher da Dioniso Caffè © 2025",
-    "footer.description": "Il servizio di food delivery aziendale personalizzato per le aziende che vogliono offrire un'esperienza gastronomica di qualità ai propri dipendenti."
+    "footer.description": "Il servizio di food delivery aziendale personalizzato per le aziende che vogliono offrire un'esperienza gastronomica di qualità ai propri dipendenti.",
+    "animation.enable": "Attiva animazioni",
+    "animation.disable": "Disattiva animazioni",
+    "animation.title": "Effetti visivi"
   },
   "en": {
     "header.countdown": "Order before 4:00 PM for delivery tomorrow",
@@ -139,7 +142,10 @@ export const translations: Translations = {
     "footer.terms": "Terms and Conditions",
     "footer.faq": "FAQ",
     "footer.copyright": "Made for Fisher by Dioniso Caffè © 2025",
-    "footer.description": "The personalized corporate food delivery service for companies that want to offer a quality gastronomic experience to their employees."
+    "footer.description": "The personalized corporate food delivery service for companies that want to offer a quality gastronomic experience to their employees.",
+    "animation.enable": "Enable animations",
+    "animation.disable": "Disable animations",
+    "animation.title": "Visual effects"
   },
   "es": {
     "header.countdown": "Ordena antes de las 16:00 para entrega mañana",
@@ -206,7 +212,10 @@ export const translations: Translations = {
     "footer.terms": "Términos y Condiciones",
     "footer.faq": "Preguntas Frecuentes",
     "footer.copyright": "Hecho para Fisher por Dioniso Caffè © 2025",
-    "footer.description": "El servicio de entrega de comida corporativo personalizado para empresas que desean ofrecer una experiencia gastronómica de calidad a sus empleados."
+    "footer.description": "El servicio de entrega de comida corporativo personalizado para empresas que desean ofrecer una experiencia gastronómica de calidad a sus empleados.",
+    "animation.enable": "Activar animaciones",
+    "animation.disable": "Desactivar animaciones",
+    "animation.title": "Efectos visuales"
   },
   "nl": {
     "header.countdown": "Bestel vóór 16:00 voor levering morgen",
