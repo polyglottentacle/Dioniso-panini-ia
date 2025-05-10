@@ -56,27 +56,31 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
     }
   };
   
-  // Generate WhatsApp message
-  const generateWhatsAppMessage = () => {
-    const message = `${t('whatsapp.message')}\n\n`;
+  // Generate SMS message
+  const generateSmsMessage = () => {
+    // Titolo dell'ordine
+    const orderTitle = `ORDINE DIONISO\n`;
     
-    // Aggiunge solo il numero d'ordine 
-    const orderInfo = `*Ordine #${orderNumber}*\n\n`;
+    // Aggiunge il numero d'ordine 
+    const orderInfo = `Ordine #${orderNumber}\n\n`;
     
     const itemsText = cartItems.map(item => 
-      `${item.quantity}x ${getProductName(item)} - ${formatCurrency(item.product.price * item.quantity)}`
+      `${item.quantity}x ${getProductName(item)} (${formatCurrency(item.product.price)})`
     ).join('\n');
     
     const totalText = `\n${t('cart.total')}: ${formatCurrency(total)}`;
     const deliveryText = `\n${t('whatsapp.delivery', { time })}`;
     const notesText = notes ? `\n${t('cart.notes')}: ${notes}` : '';
     
-    return encodeURIComponent(orderInfo + message + itemsText + totalText + deliveryText + notesText);
+    // Aggiungi timestamp
+    const timestamp = `\nOrdinato: ${new Date().toLocaleString()}`;
+    
+    return encodeURIComponent(orderTitle + orderInfo + itemsText + totalText + deliveryText + notesText + timestamp);
   };
   
-  // WhatsApp phone number
-  const phoneNumber = "31619311373";
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${generateWhatsAppMessage()}`;
+  // Chef phone number for SMS
+  const phoneNumber = "31619311373"; // Sostituisci con il numero reale se necessario
+  const smsUrl = `sms:${phoneNumber}?body=${generateSmsMessage()}`;
   
   return (
     <AnimatePresence>
@@ -142,9 +146,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                 {t('whatsapp.cancel')}
               </button>
               <a 
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={smsUrl}
                 className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
                 onClick={() => {
                   // Completa l'ordine pulendo il carrello e chiudendo il modale
