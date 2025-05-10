@@ -56,27 +56,31 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
     }
   };
   
-  // Generate WhatsApp message
-  const generateWhatsAppMessage = () => {
-    const message = `${t('whatsapp.message')}\n\n`;
+  // Generate order message
+  const generateOrderMessage = () => {
+    // Titolo dell'ordine
+    const orderTitle = `ORDINE DIONISO\n`;
     
-    // Aggiunge solo il numero d'ordine 
-    const orderInfo = `*Ordine #${orderNumber}*\n\n`;
+    // Aggiunge il numero d'ordine 
+    const orderInfo = `Ordine #${orderNumber}\n\n`;
     
     const itemsText = cartItems.map(item => 
-      `${item.quantity}x ${getProductName(item)} - ${formatCurrency(item.product.price * item.quantity)}`
+      `${item.quantity}x ${getProductName(item)} (${formatCurrency(item.product.price)})`
     ).join('\n');
     
     const totalText = `\n${t('cart.total')}: ${formatCurrency(total)}`;
     const deliveryText = `\n${t('whatsapp.delivery', { time })}`;
     const notesText = notes ? `\n${t('cart.notes')}: ${notes}` : '';
     
-    return encodeURIComponent(orderInfo + message + itemsText + totalText + deliveryText + notesText);
+    // Aggiungi timestamp
+    const timestamp = `\nOrdinato: ${new Date().toLocaleString()}`;
+    
+    return encodeURIComponent(orderTitle + orderInfo + itemsText + totalText + deliveryText + notesText + timestamp);
   };
   
-  // WhatsApp phone number
-  const phoneNumber = "31619311373";
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${generateWhatsAppMessage()}`;
+  // Chef phone number for SMS
+  const phoneNumber = "31619311373"; // Sostituisci con il numero reale se necessario
+  const smsUrl = `sms:${phoneNumber}?body=${generateOrderMessage()}`;
   
   return (
     <AnimatePresence>
@@ -94,13 +98,13 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
             className="bg-white rounded-xl max-w-md w-full p-6"
           >
             <div className="text-center mb-4">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold">{t('whatsapp.title')}</h3>
-              <p className="text-gray-500 text-sm mt-1">{t('whatsapp.subtitle')}</p>
+              <h3 className="text-xl font-bold">Conferma il tuo ordine</h3>
+              <p className="text-gray-500 text-sm mt-1">Completa il pagamento via SMS</p>
             </div>
             
             <div className="mb-4">
@@ -142,10 +146,8 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                 {t('whatsapp.cancel')}
               </button>
               <a 
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
+                href={smsUrl}
+                className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-medium text-center hover:bg-blue-700 transition shadow-md"
                 onClick={() => {
                   // Completa l'ordine pulendo il carrello e chiudendo il modale
                   setTimeout(() => {
@@ -162,7 +164,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                   }, 500);
                 }}
               >
-                {t('whatsapp.open')}
+                Invia SMS
               </a>
             </div>
           </motion.div>
