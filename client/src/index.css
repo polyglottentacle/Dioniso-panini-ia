@@ -26,12 +26,12 @@
   --ring: 20 14.3% 4.1%;
   --radius: 0.5rem;
   
-  /* Fisher Brand Colors */
-  --fisher-blue: 203 100% 18%; /* #003759 - dark blue */
-  --fisher-blue-dark: 208 100% 10%; /* #001A2C - darker blue */
-  --fisher-gold: 38 80% 63%; /* #ECC85E - gold accent */
-  --fisher-gray: 0 0% 92%; /* #EBEBEB - light gray */
-  --fisher-accent: 203 63% 77%; /* #86BEDE - light blue */
+  /* Brand Colors */
+  --dioniso-blue: 203 100% 18%; /* #003759 - dark blue */
+  --dioniso-blue-dark: 208 100% 10%; /* #001A2C - darker blue */
+  --dioniso-gold: 38 80% 63%; /* #ECC85E - gold accent */
+  --dioniso-gray: 0 0% 92%; /* #EBEBEB - light gray */
+  --dioniso-accent: 203 63% 77%; /* #86BEDE - light blue */
 }
 
 .dark {
