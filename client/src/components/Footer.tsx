@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="md:flex justify-between">
           <div className="mb-6 md:mb-0">
             <div className="flex items-center mb-4">
-              <h3 className="text-xl font-bold">Dioniso Caffè</h3>
+              <h3 className="text-xl font-bold">Fisher</h3>
             </div>
             <p className="text-gray-300 text-sm max-w-md">
               {t('footer.description')}
@@ -20,7 +20,7 @@ export default function Footer() {
             <div>
               <h4 className="text-lg font-semibold mb-3 text-fisher-accent">{t('footer.contact')}</h4>
               <ul className="text-gray-300 space-y-2 text-sm">
-                <li>Dioniso Caffè</li>
+                <li>Fisher</li>
                 <li>+31 619311373</li>
                 <li>Lelystad, Netherlands</li>
               </ul>
