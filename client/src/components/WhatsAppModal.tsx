@@ -108,7 +108,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
             </div>
             
             <div className="mb-4">
-              <p className="text-sm font-medium mb-2 text-dioniso-blue-dark">Ordine #{orderNumber}</p>
+              <p className="text-sm font-medium mb-2 text-fisher-blue-dark">Ordine #{orderNumber}</p>
             </div>
             
             <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
