@@ -41,7 +41,7 @@ export default function Header() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-2 mb-3 md:mb-0">
             <h1 className="text-2xl md:text-3xl font-bold text-fisher-blue">
-              Fisher
+              Dioniso Caffè
             </h1>
 
           </div>
@@ -51,6 +51,11 @@ export default function Header() {
             
             <div className="flex items-center space-x-4">
               <LanguageSwitcher />
+              
+              {/* Login funzionalità disabilitata temporaneamente */}
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue">
+                <span>Fisher</span>
+              </div>
               
               <button 
                 onClick={toggleCart}

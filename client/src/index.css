@@ -15,11 +15,11 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 203 100% 18%; /* blue: #003759 - dark blue */
+  --primary: 203 100% 18%; /* Fisher blue: #003759 - dark blue */
   --primary-foreground: 211 100% 99%;
-  --secondary: 0 0% 92%; /* light gray: #EBEBEB */
+  --secondary: 0 0% 92%; /* Fisher light gray: #EBEBEB */
   --secondary-foreground: 24 9.8% 10%;
-  --accent: 203 63% 77%; /* light blue: #86BEDE */
+  --accent: 203 63% 77%; /* Fisher light blue: #86BEDE */
   --accent-foreground: 24 9.8% 10%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
