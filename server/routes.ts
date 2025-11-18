@@ -197,6 +197,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dashboard API (Admin only - NOTE: Authentication should be added in production)
+  // TODO: Add proper admin authentication middleware before deploying
+  app.get(`${apiPath}/admin/stats`, async (req, res) => {
+    try {
+      // In production, check if user is admin here
+      const stats = await storage.getDashboardStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  app.get(`${apiPath}/admin/orders`, async (req, res) => {
+    try {
+      // In production, check if user is admin here
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch orders" });
+    }
+  });
+
+  app.patch(`${apiPath}/admin/orders/:id/status`, async (req, res) => {
+    try {
+      // In production, check if user is admin here
+      const orderId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!status) {
+        return res.status(400).json({ error: "Status is required" });
+      }
+      
+      const updatedOrder = await storage.updateOrderStatus(orderId, status);
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update order status" });
+    }
+  });
+
+  app.get(`${apiPath}/admin/subscriptions`, async (req, res) => {
+    try {
+      // In production, check if user is admin here
+      const subscriptions = await storage.getAllSubscriptions();
+      res.json(subscriptions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch subscriptions" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

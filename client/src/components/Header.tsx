@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import CountdownTimer from "./CountdownTimer";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { LayoutDashboard } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -51,6 +53,16 @@ export default function Header() {
             
             <div className="flex items-center space-x-4">
               <LanguageSwitcher />
+              
+              <Link href="/dashboard">
+                <button 
+                  className="p-2 text-fisher-blue hover:bg-fisher-gray rounded-full transition"
+                  data-testid="link-dashboard"
+                  title="Dashboard Amministrativa"
+                >
+                  <LayoutDashboard className="w-6 h-6" />
+                </button>
+              </Link>
               
               {/* Login funzionalità disabilitata temporaneamente */}
               <div className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue">

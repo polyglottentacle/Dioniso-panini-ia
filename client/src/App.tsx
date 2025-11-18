@@ -10,6 +10,7 @@ import { AnimationProvider, PageTransition } from "@/contexts/AnimationContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AnimationToggle from "@/components/AnimationToggle";
 import HomePage from "@/pages/HomePage";
+import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -31,6 +32,7 @@ function Router() {
       <PageTransition>
         <Switch>
           <Route path="/" component={HomePage} />
+          <Route path="/dashboard" component={DashboardPage} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>

@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   avatar: text("avatar"),
   loyaltyPoints: integer("loyalty_points").default(0),
   loyaltyLevel: text("loyalty_level").default("bronze"),
+  isAdmin: boolean("is_admin").default(false),
 });
 
 // Product categories
@@ -44,6 +45,9 @@ export const products = pgTable("products", {
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   userId: integer("user_id"),
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
   status: text("status").notNull().default("pending"),
   total: integer("total").notNull(), // total in cents
   deliveryFloor: text("delivery_floor").notNull(),
