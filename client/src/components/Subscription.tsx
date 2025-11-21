@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { MenuPreference, DeliveryTime } from "@/lib/data";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Dialog modale che si apre quando si richiede un abbonamento
 function SubscriptionWhatsAppModal({ 
@@ -146,15 +147,21 @@ function SubscriptionWhatsAppModal({
 export default function Subscription() {
   const { t, language } = useLanguage();
   
+  const { user, login, loading } = useAuth();
+  
   // State per le preferenze dell'abbonamento
   const [menuPreference, setMenuPreference] = useState<MenuPreference>('standard');
-  const [preferredTime, setPreferredTime] = useState<DeliveryTime>('11:00');
+  const [preferredTime, setPreferredTime] = useState<DeliveryTime>('12:00');
   
   // State per il modale di WhatsApp
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   
   // Funzione per inviare l'ordine dell'abbonamento tramite WhatsApp
   const requestSubscription = () => {
+    if (!user) {
+      login();
+      return;
+    }
     setShowWhatsAppModal(true);
   };
   
@@ -272,39 +279,35 @@ export default function Subscription() {
             
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">{t('subscription.time')}</label>
-              <div className="flex space-x-6">
-                <div className="flex items-center">
-                  <input 
-                    type="radio" 
-                    id="time-11" 
-                    name="delivery-time" 
-                    className="mr-2 h-4 w-4 border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                    checked={preferredTime === '11:00'}
-                    onChange={() => setPreferredTime('11:00')}
-                  />
-                  <label htmlFor="time-11" className="text-sm">11:00</label>
-                </div>
-                <div className="flex items-center">
-                  <input 
-                    type="radio" 
-                    id="time-17" 
-                    name="delivery-time" 
-                    className="mr-2 h-4 w-4 border-gray-300 text-fisher-blue focus:ring-fisher-accent"
-                    checked={preferredTime === '17:00'}
-                    onChange={() => setPreferredTime('17:00')}
-                  />
-                  <label htmlFor="time-17" className="text-sm">17:00</label>
-                </div>
+              <div className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+                12:00 - {t('cart.lunchTime')}
               </div>
             </div>
             
+            {!user && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700 font-medium">
+                  {language === 'it' && "Accedi con Google per attivare l'abbonamento"}
+                  {language === 'en' && "Sign in with Google to activate the subscription"}
+                  {language === 'es' && "Inicia sesión con Google para activar la suscripción"}
+                  {language === 'nl' && "Meld je aan met Google om het abonnement te activeren"}
+                  {language === 'pl' && "Zaloguj się przez Google, aby aktywować abonament"}
+                </p>
+              </div>
+            )}
+            
             <motion.button 
-              className="bg-fisher-gold hover:bg-yellow-400 text-fisher-blue-dark font-bold py-3 px-6 rounded-lg transition w-full"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className={`font-bold py-3 px-6 rounded-lg transition w-full ${
+                user && !loading
+                  ? 'bg-fisher-gold hover:bg-yellow-400 text-fisher-blue-dark'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              whileHover={user && !loading ? { scale: 1.03 } : {}}
+              whileTap={user && !loading ? { scale: 0.97 } : {}}
               onClick={requestSubscription}
+              disabled={!user || loading}
             >
-              {t('subscription.activate')}
+              {loading ? '...' : (user ? t('subscription.activate') : t('header.login'))}
             </motion.button>
           </div>
         </div>
