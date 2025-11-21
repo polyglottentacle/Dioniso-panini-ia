@@ -77,6 +77,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
   // WhatsApp phone number
   const phoneNumber = "31619311373";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${generateWhatsAppMessage()}`;
+  const telegramUrl = `https://t.me/+31619311373?text=${generateWhatsAppMessage()}`;
   
   return (
     <AnimatePresence>
@@ -134,10 +135,10 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
               )}
             </div>
             
-            <div className="flex space-x-3">
+            <div className="grid grid-cols-3 gap-2">
               <button 
                 onClick={onClose}
-                className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium"
+                className="py-2 border border-gray-300 rounded-lg text-gray-700 font-medium text-sm"
               >
                 {t('whatsapp.cancel')}
               </button>
@@ -145,15 +146,12 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md"
+                className="py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md text-sm"
                 onClick={() => {
-                  // Completa l'ordine pulendo il carrello e chiudendo il modale
                   setTimeout(() => {
                     clearCart();
                     onClose();
                     toggleCart();
-                    
-                    // Mostra un toast di conferma
                     toast({
                       title: t('cart.orderSuccess'),
                       description: t('cart.orderSuccessMessage'),
@@ -162,7 +160,27 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                   }, 500);
                 }}
               >
-                {t('whatsapp.open')}
+                WhatsApp
+              </a>
+              <a 
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2 bg-blue-500 text-white rounded-lg font-medium text-center hover:bg-blue-600 transition shadow-md text-sm"
+                onClick={() => {
+                  setTimeout(() => {
+                    clearCart();
+                    onClose();
+                    toggleCart();
+                    toast({
+                      title: t('cart.orderSuccess'),
+                      description: t('telegram.orderSuccessMessage'),
+                      variant: "default",
+                    });
+                  }, 500);
+                }}
+              >
+                Telegram
               </a>
             </div>
           </motion.div>
