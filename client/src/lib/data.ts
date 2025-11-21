@@ -43,7 +43,7 @@ export interface User {
 
 export type MenuPreference = 'standard' | 'vegetarian' | 'halal';
 export type WeekDay = 'mon' | 'tue' | 'wed' | 'thu' | 'fri';
-export type DeliveryTime = '11:00' | '17:00';
+export type DeliveryTime = '12:00';
 
 // Categories data
 export const categories: Category[] = [

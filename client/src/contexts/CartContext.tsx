@@ -58,9 +58,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return [...prevItems, { product, quantity }];
       }
     });
-    
-    // Open cart when adding a product
-    setIsCartOpen(true);
   };
   
   // Remove product from cart

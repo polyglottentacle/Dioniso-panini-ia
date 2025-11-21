@@ -10,7 +10,7 @@ export default function Cart() {
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateCartItemQuantity } = useCart();
   
   const [notes, setNotes] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("11:00");
+  const [deliveryTime, setDeliveryTime] = useState("12:00");
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   
   // Calculate totals - memorizziamo per evitare ricalcoli inutili
@@ -149,14 +149,9 @@ export default function Cart() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t('cart.time')}
                     </label>
-                    <select
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                      value={deliveryTime}
-                      onChange={(e) => setDeliveryTime(e.target.value)}
-                    >
-                      <option value="11:00">11:00</option>
-                      <option value="17:00">17:00</option>
-                    </select>
+                    <div className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+                      12:00 - {t('cart.lunchTime')}
+                    </div>
                   </div>
                   
                   <div className="border-t border-b py-4 space-y-2 mb-6">
