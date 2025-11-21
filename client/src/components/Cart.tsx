@@ -168,10 +168,12 @@ export default function Cart() {
                       <span className="text-gray-600">{t('cart.vat')}</span>
                       <span>{formatCurrency(cartCalculations.vat)}</span>
                     </div>
-                    <div className="flex justify-between text-sm text-green-600">
-                      <span>{t('cart.discount')}</span>
-                      <span>-{formatCurrency(cartCalculations.discount)}</span>
-                    </div>
+                    {cartCalculations.discount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>{t('cart.discount')}</span>
+                        <span>-{formatCurrency(cartCalculations.discount)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between font-bold pt-2">
                       <span>{t('cart.total')}</span>
                       <span>{formatCurrency(cartCalculations.total)}</span>
