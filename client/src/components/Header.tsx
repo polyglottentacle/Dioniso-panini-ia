@@ -41,11 +41,15 @@ export default function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-2 mb-3 md:mb-0">
+          <div className="flex items-center space-x-3 mb-3 md:mb-0">
+            <img 
+              src="@assets/Gemini_Generated_Image_xl91exl91exl91ex-640x360_1763699908506.png" 
+              alt="Dioniso Mascotte" 
+              className="w-12 h-12 object-contain"
+            />
             <h1 className="text-2xl md:text-3xl font-bold text-fisher-blue">
               Dioniso Caffè
             </h1>
-
           </div>
           
           <div className="flex flex-col items-center md:items-end space-y-2">
