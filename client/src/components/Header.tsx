@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import CountdownTimer from "./CountdownTimer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { LayoutDashboard } from "lucide-react";
+import dionisoPng from "@assets/Gemini_Generated_Image_xl91exl91exl91ex-640x360_1763699908506.png";
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -43,7 +44,7 @@ export default function Header() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-3 md:mb-0">
             <img 
-              src="@assets/Gemini_Generated_Image_xl91exl91exl91ex-640x360_1763699908506.png" 
+              src={dionisoPng}
               alt="Dioniso Mascotte" 
               className="w-12 h-12 object-contain"
             />
@@ -68,10 +69,34 @@ export default function Header() {
                 </button>
               </Link>
               
-              {/* Login funzionalità disabilitata temporaneamente */}
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-sm font-medium text-fisher-blue">
-                <span>Fisher</span>
-              </div>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center space-x-2 px-3 py-1.5 bg-fisher-gold hover:bg-yellow-400 border border-fisher-gold rounded-full text-sm font-medium text-fisher-blue-dark transition"
+                      data-testid="button-user-menu">
+                      <span>{user.displayName || user.email}</span>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleLogout}
+                      data-testid="button-logout">
+                      {t('header.logout')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button 
+                  onClick={handleLogin}
+                  disabled={loading}
+                  className="flex items-center space-x-2 px-3 py-1.5 bg-fisher-blue hover:bg-fisher-blue-dark text-white rounded-full text-sm font-medium transition disabled:opacity-50"
+                  data-testid="button-login"
+                >
+                  <span>{loading ? '...' : t('header.login')}</span>
+                </button>
+              )}
               
               <button 
                 onClick={toggleCart}
