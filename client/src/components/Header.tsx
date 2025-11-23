@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import CountdownTimer from "./CountdownTimer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { LayoutDashboard } from "lucide-react";
+import { motion } from "framer-motion";
 import dionisoPng from "@assets/Gemini_Generated_Image_xl91exl91exl91ex-640x360_1763699908506.png";
 import { 
   DropdownMenu, 
@@ -43,11 +44,17 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-3 md:mb-0">
-            <img 
-              src={dionisoPng}
-              alt="Dioniso Mascotte" 
-              className="w-12 h-12 object-contain"
-            />
+            <motion.div
+              className="w-14 h-14 bg-fisher-gold rounded-full p-2 flex items-center justify-center shadow-md"
+              whileHover={{ scale: 1.1, rotate: 10 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <img 
+                src={dionisoPng}
+                alt="Dioniso Mascotte" 
+                className="w-12 h-12 object-contain"
+              />
+            </motion.div>
             <h1 className="text-2xl md:text-3xl font-bold text-fisher-blue">
               Dioniso Caffè
             </h1>
