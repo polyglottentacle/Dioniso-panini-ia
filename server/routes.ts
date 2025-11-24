@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, type InsertUser } from "@shared/schema";
+import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, insertIngredientSchema, insertProductIngredientSchema, type InsertUser } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -50,14 +50,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderData = insertOrderSchema.parse(req.body);
       const orderItems = z.array(insertOrderItemSchema).parse(req.body.items);
-      
+
+      // Create the order
       const newOrder = await storage.createOrder(orderData, orderItems);
-      
+
       // Update loyalty points if user is logged in
       if (orderData.userId) {
         await storage.updateLoyaltyPoints(orderData.userId, Math.floor(orderData.total / 100));
       }
-      
+
+      // Deduct ingredients from inventory for each order item
+      for (const item of orderItems) {
+        const productIngredients = await storage.getProductIngredients(item.productId);
+
+        for (const pi of productIngredients) {
+          if (pi.ingredient) {
+            const totalQuantityNeeded = pi.quantityNeeded * item.quantity;
+            await storage.updateIngredientQuantity(
+              pi.ingredientId,
+              -totalQuantityNeeded, // negative for consumption
+              'order',
+              newOrder.id,
+              `Order #${newOrder.id} - ${item.quantity}x Product #${item.productId}`
+            );
+          }
+        }
+      }
+
       res.status(201).json(newOrder);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -243,6 +262,171 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(subscriptions);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch subscriptions" });
+    }
+  });
+
+  // Inventory Management API (Admin only)
+  // Get all ingredients
+  app.get(`${apiPath}/admin/inventory`, async (req, res) => {
+    try {
+      const ingredients = await storage.getAllIngredients();
+      res.json(ingredients);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ingredients" });
+    }
+  });
+
+  // Get single ingredient
+  app.get(`${apiPath}/admin/inventory/:id`, async (req, res) => {
+    try {
+      const ingredientId = parseInt(req.params.id);
+      const ingredient = await storage.getIngredientById(ingredientId);
+
+      if (!ingredient) {
+        return res.status(404).json({ error: "Ingredient not found" });
+      }
+
+      res.json(ingredient);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ingredient" });
+    }
+  });
+
+  // Create ingredient
+  app.post(`${apiPath}/admin/inventory`, async (req, res) => {
+    try {
+      const ingredientData = insertIngredientSchema.parse(req.body);
+      const newIngredient = await storage.createIngredient(ingredientData);
+      res.status(201).json(newIngredient);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create ingredient" });
+    }
+  });
+
+  // Update ingredient
+  app.patch(`${apiPath}/admin/inventory/:id`, async (req, res) => {
+    try {
+      const ingredientId = parseInt(req.params.id);
+      const updatedIngredient = await storage.updateIngredient(ingredientId, req.body);
+
+      if (!updatedIngredient) {
+        return res.status(404).json({ error: "Ingredient not found" });
+      }
+
+      res.json(updatedIngredient);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update ingredient" });
+    }
+  });
+
+  // Delete ingredient
+  app.delete(`${apiPath}/admin/inventory/:id`, async (req, res) => {
+    try {
+      const ingredientId = parseInt(req.params.id);
+      await storage.deleteIngredient(ingredientId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete ingredient" });
+    }
+  });
+
+  // Get low stock ingredients
+  app.get(`${apiPath}/admin/inventory/alerts/low-stock`, async (req, res) => {
+    try {
+      const lowStockItems = await storage.getLowStockIngredients();
+      res.json(lowStockItems);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch low stock items" });
+    }
+  });
+
+  // Update ingredient quantity (restock or adjustment)
+  app.post(`${apiPath}/admin/inventory/:id/adjust`, async (req, res) => {
+    try {
+      const ingredientId = parseInt(req.params.id);
+      const { quantityChange, reason, notes } = req.body;
+
+      if (typeof quantityChange !== 'number') {
+        return res.status(400).json({ error: "quantityChange must be a number" });
+      }
+
+      await storage.updateIngredientQuantity(
+        ingredientId,
+        quantityChange,
+        reason || 'adjustment',
+        undefined,
+        notes
+      );
+
+      const updatedIngredient = await storage.getIngredientById(ingredientId);
+      res.json(updatedIngredient);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to adjust ingredient quantity" });
+    }
+  });
+
+  // Get inventory history
+  app.get(`${apiPath}/admin/inventory/history`, async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const history = await storage.getInventoryHistory(limit);
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch inventory history" });
+    }
+  });
+
+  // Get ingredient history
+  app.get(`${apiPath}/admin/inventory/:id/history`, async (req, res) => {
+    try {
+      const ingredientId = parseInt(req.params.id);
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const history = await storage.getIngredientHistory(ingredientId, limit);
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ingredient history" });
+    }
+  });
+
+  // Get inventory stats
+  app.get(`${apiPath}/admin/inventory/stats`, async (req, res) => {
+    try {
+      const stats = await storage.getInventoryStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch inventory stats" });
+    }
+  });
+
+  // Product-Ingredient management
+  // Get product ingredients (recipe)
+  app.get(`${apiPath}/admin/products/:id/ingredients`, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const ingredients = await storage.getProductIngredients(productId);
+      res.json(ingredients);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch product ingredients" });
+    }
+  });
+
+  // Set product ingredients (recipe)
+  app.post(`${apiPath}/admin/products/:id/ingredients`, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const { ingredients } = req.body;
+
+      if (!Array.isArray(ingredients)) {
+        return res.status(400).json({ error: "ingredients must be an array" });
+      }
+
+      await storage.setProductIngredients(productId, ingredients);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to set product ingredients" });
     }
   });
 

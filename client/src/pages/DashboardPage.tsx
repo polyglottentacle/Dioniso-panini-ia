@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
 import OrdersTable from "../components/dashboard/OrdersTable";
 import SubscriptionsTable from "../components/dashboard/SubscriptionsTable";
+import InventoryTable from "../components/dashboard/InventoryTable";
 import StatsCards from "../components/dashboard/StatsCards";
 
 interface DashboardStats {
@@ -97,9 +98,10 @@ export default function DashboardPage() {
         <StatsCards stats={stats} loading={statsLoading} />
 
         <Tabs defaultValue="orders" className="mt-8">
-          <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
             <TabsTrigger value="orders" data-testid="tab-orders">Ordini</TabsTrigger>
             <TabsTrigger value="subscriptions" data-testid="tab-subscriptions">Abbonamenti</TabsTrigger>
+            <TabsTrigger value="inventory" data-testid="tab-inventory">Inventario</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders" className="mt-6">
@@ -108,6 +110,10 @@ export default function DashboardPage() {
 
           <TabsContent value="subscriptions" className="mt-6">
             <SubscriptionsTable />
+          </TabsContent>
+
+          <TabsContent value="inventory" className="mt-6">
+            <InventoryTable />
           </TabsContent>
         </Tabs>
       </main>

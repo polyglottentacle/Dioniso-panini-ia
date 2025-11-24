@@ -41,6 +41,45 @@ export const products = pgTable("products", {
   isCustomizable: boolean("is_customizable").default(false),
 });
 
+// Ingredients (base inventory items)
+export const ingredients = pgTable("ingredients", {
+  id: serial("id").primaryKey(),
+  nameIt: text("name_it").notNull(),
+  nameEn: text("name_en").notNull(),
+  nameEs: text("name_es").notNull(),
+  unit: text("unit").notNull(), // "kg", "pz" (pezzi), "l" (litri)
+  currentQuantity: integer("current_quantity").notNull().default(0),
+  minQuantity: integer("min_quantity").notNull().default(0), // soglia di allarme
+  maxQuantity: integer("max_quantity").notNull().default(100),
+  costPerUnit: integer("cost_per_unit").notNull().default(0), // in cents
+  category: text("category"), // "carni", "verdure", "pane", "condimenti", "bevande"
+  lastRestockedAt: timestamp("last_restocked_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Product-Ingredient relationship (recipes)
+export const productIngredients = pgTable("product_ingredients", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull(),
+  ingredientId: integer("ingredient_id").notNull(),
+  quantityNeeded: integer("quantity_needed").notNull(), // quantity per product unit
+});
+
+// Inventory history/logs (audit trail)
+export const inventoryHistory = pgTable("inventory_history", {
+  id: serial("id").primaryKey(),
+  ingredientId: integer("ingredient_id").notNull(),
+  quantityChange: integer("quantity_change").notNull(), // positive for restock, negative for consumption
+  previousQuantity: integer("previous_quantity").notNull(),
+  newQuantity: integer("new_quantity").notNull(),
+  reason: text("reason").notNull(), // "order", "restock", "adjustment", "waste"
+  orderId: integer("order_id"), // reference if related to an order
+  notes: text("notes"),
+  createdBy: text("created_by"), // "system" or user ID
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Orders
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
@@ -98,6 +137,18 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   id: true,
   createdAt: true,
 });
+export const insertIngredientSchema = createInsertSchema(ingredients).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertProductIngredientSchema = createInsertSchema(productIngredients).omit({
+  id: true,
+});
+export const insertInventoryHistorySchema = createInsertSchema(inventoryHistory).omit({
+  id: true,
+  createdAt: true,
+});
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -117,3 +168,12 @@ export type OrderItem = typeof orderItems.$inferSelect;
 
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type Subscription = typeof subscriptions.$inferSelect;
+
+export type InsertIngredient = z.infer<typeof insertIngredientSchema>;
+export type Ingredient = typeof ingredients.$inferSelect;
+
+export type InsertProductIngredient = z.infer<typeof insertProductIngredientSchema>;
+export type ProductIngredient = typeof productIngredients.$inferSelect;
+
+export type InsertInventoryHistory = z.infer<typeof insertInventoryHistorySchema>;
+export type InventoryHistory = typeof inventoryHistory.$inferSelect;
