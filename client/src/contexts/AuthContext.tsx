@@ -41,11 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               photoURL: firebaseUser.photoURL
             })
           });
-          
+
           if (!response.ok) {
-            throw new Error('Errore nella risposta del server');
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            console.error('Server error:', errorData);
+            throw new Error(`Errore del server: ${errorData.error || response.statusText}`);
           }
-          
+
           // Ottieni il nostro utente dal database
           const appUser = await response.json();
           setUser(appUser);

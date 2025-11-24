@@ -109,19 +109,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Users API
   app.post(`${apiPath}/users/login`, async (req, res) => {
     try {
-      // Simple mock login for demonstration
+      // ⚠️ SECURITY WARNING: Questo è un sistema di login di dimostrazione
+      // ⚠️ CRITICAL: Le password sono confrontate in chiaro (plain text)!
+      // ⚠️ TODO: Implementare hashing delle password con bcrypt o argon2 prima del deployment
       const { username, password } = req.body;
-      
+
       if (!username || !password) {
         return res.status(400).json({ error: "Username and password are required" });
       }
-      
+
       const user = await storage.getUserByUsername(username);
-      
+
+      // ⚠️ IMPORTANTE: Usare bcrypt.compare(password, user.password) in produzione
       if (!user || user.password !== password) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
-      
+
       // Don't return password
       const { password: _, ...userWithoutPassword } = user;
       res.json(userWithoutPassword);
@@ -159,17 +162,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let user = await storage.getUserByEmail(email);
       
       if (!user) {
-        // Genera uno username unico basato sull'email
-        const username = email.split('@')[0] + '_' + Math.floor(Math.random() * 1000);
-        
+        // Genera uno username unico basato sull'email e un timestamp
+        // per evitare collisioni tra utenti con email simili
+        const baseUsername = email.split('@')[0];
+        const uniqueSuffix = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
+        const username = `${baseUsername}_${uniqueSuffix}`;
+
         // Crea un nuovo utente se non esiste
+        // Gli utenti Firebase non necessitano di password nel database locale
         const userData = insertUserSchema.parse({
           username,
           email,
-          displayName: displayName || email.split('@')[0],
-          password: Math.random().toString(36).slice(-10), // Password casuale
+          displayName: displayName || baseUsername,
+          password: 'firebase_auth', // Segnaposto per utenti autenticati via Firebase
         });
-        
+
         user = await storage.createUser(userData);
       }
       
@@ -197,11 +204,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard API (Admin only - NOTE: Authentication should be added in production)
-  // TODO: Add proper admin authentication middleware before deploying
+  // ⚠️ SECURITY WARNING: Dashboard API (Admin only)
+  // ⚠️ CRITICAL: Questi endpoint NON hanno autenticazione!
+  // ⚠️ TODO: Implementare middleware di autenticazione admin PRIMA del deployment in produzione
+  // Esempio: app.get(`${apiPath}/admin/stats`, verifyAdmin, async (req, res) => { ... })
   app.get(`${apiPath}/admin/stats`, async (req, res) => {
     try {
-      // In production, check if user is admin here
+      // ⚠️ IMPORTANTE: Verificare che l'utente sia admin prima di procedere
       const stats = await storage.getDashboardStats();
       res.json(stats);
     } catch (error) {
@@ -211,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get(`${apiPath}/admin/orders`, async (req, res) => {
     try {
-      // In production, check if user is admin here
+      // ⚠️ IMPORTANTE: Verificare che l'utente sia admin prima di procedere
       const orders = await storage.getAllOrders();
       res.json(orders);
     } catch (error) {
@@ -221,14 +230,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch(`${apiPath}/admin/orders/:id/status`, async (req, res) => {
     try {
-      // In production, check if user is admin here
+      // ⚠️ IMPORTANTE: Verificare che l'utente sia admin prima di procedere
       const orderId = parseInt(req.params.id);
       const { status } = req.body;
-      
+
       if (!status) {
         return res.status(400).json({ error: "Status is required" });
       }
-      
+
       const updatedOrder = await storage.updateOrderStatus(orderId, status);
       res.json(updatedOrder);
     } catch (error) {
@@ -238,7 +247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get(`${apiPath}/admin/subscriptions`, async (req, res) => {
     try {
-      // In production, check if user is admin here
+      // ⚠️ IMPORTANTE: Verificare che l'utente sia admin prima di procedere
       const subscriptions = await storage.getAllSubscriptions();
       res.json(subscriptions);
     } catch (error) {
