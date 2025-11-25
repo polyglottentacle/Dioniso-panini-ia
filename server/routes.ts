@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, type InsertUser } from "@shared/schema";
+import { generateAIResponse, getUserRole, getGreeting, type UserRole } from "./gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -243,6 +244,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(subscriptions);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch subscriptions" });
+    }
+  });
+
+  // AI Chat API (Dioniso Assistant)
+  app.post(`${apiPath}/ai/chat`, async (req, res) => {
+    try {
+      const { message, userId, conversationHistory } = req.body;
+
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      // Get user data if userId is provided
+      let user = null;
+      let userRole: UserRole = 'customer';
+      let additionalContext = '';
+
+      if (userId) {
+        user = await storage.getUser(userId);
+        if (user) {
+          userRole = getUserRole(user);
+
+          // Add context based on role
+          if (userRole === 'admin') {
+            const stats = await storage.getDashboardStats();
+            additionalContext = `Dashboard Stats: ${stats.totalOrders} ordini totali, €${stats.totalRevenue} revenue totale, ${stats.activeSubscriptions} sottoscrizioni attive.`;
+          } else if (userRole === 'chef') {
+            const orders = await storage.getAllOrders();
+            const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
+            additionalContext = `Ordini in preparazione: ${pendingOrders.length}`;
+          } else if (userRole === 'customer') {
+            const orders = await storage.getUserOrders(userId);
+            const loyaltyInfo = await storage.getUserLoyaltyInfo(userId);
+            additionalContext = `Cliente ha ${orders.length} ordini in storico, ${loyaltyInfo?.points || 0} punti fedeltà.`;
+          }
+        }
+      }
+
+      // Generate AI response
+      const aiResponse = await generateAIResponse(
+        userRole,
+        message,
+        conversationHistory,
+        additionalContext
+      );
+
+      res.json({
+        response: aiResponse,
+        role: userRole,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('AI Chat Error:', error);
+      res.status(500).json({ error: "Errore nel generare la risposta. Riprova più tardi." });
+    }
+  });
+
+  // AI Greeting endpoint
+  app.get(`${apiPath}/ai/greeting`, async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : null;
+
+      let user = null;
+      let userRole: UserRole = 'customer';
+      let userName: string | undefined = undefined;
+
+      if (userId) {
+        user = await storage.getUser(userId);
+        if (user) {
+          userRole = getUserRole(user);
+          userName = user.displayName || user.username;
+        }
+      }
+
+      const greeting = getGreeting(userRole, userName);
+
+      res.json({
+        greeting,
+        role: userRole,
+        userName
+      });
+    } catch (error) {
+      console.error('AI Greeting Error:', error);
+      res.status(500).json({ error: "Failed to generate greeting" });
     }
   });
 

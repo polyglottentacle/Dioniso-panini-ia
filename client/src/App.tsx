@@ -9,6 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AnimationProvider, PageTransition } from "@/contexts/AnimationContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AnimationToggle from "@/components/AnimationToggle";
+import DionisoChat from "@/components/DionisoChat";
 import HomePage from "@/pages/HomePage";
 import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/not-found";
@@ -52,6 +53,7 @@ function App() {
                   <Toaster />
                   <Router />
                   <AnimationToggle />
+                  <DionisoChat />
                 </TooltipProvider>
               </AnimationProvider>
             </FavoritesProvider>
