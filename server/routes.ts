@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, type InsertUser } from "@shared/schema";
+import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, insertReservationSchema, type InsertUser } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -246,6 +247,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ─── Diana API: Reservations ────────────────────────────────────────────────
+
+  app.post(`${apiPath}/reservations`, async (req, res) => {
+    try {
+      const data = insertReservationSchema.parse(req.body);
+      const reservation = await storage.createReservation(data);
+      broadcastToAdmins({ type: "new_reservation", reservation });
+      res.status(201).json(reservation);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
+      res.status(500).json({ error: "Failed to create reservation" });
+    }
+  });
+
+  app.get(`${apiPath}/reservations/today`, async (req, res) => {
+    try {
+      const list = await storage.getTodayReservations();
+      res.json(list);
+    } catch { res.status(500).json({ error: "Failed to fetch today's reservations" }); }
+  });
+
+  app.get(`${apiPath}/reservations/week`, async (req, res) => {
+    try {
+      const list = await storage.getWeekReservations();
+      res.json(list);
+    } catch { res.status(500).json({ error: "Failed to fetch week reservations" }); }
+  });
+
+  app.get(`${apiPath}/reservations`, async (req, res) => {
+    try {
+      const list = await storage.getAllReservations();
+      res.json(list);
+    } catch { res.status(500).json({ error: "Failed to fetch reservations" }); }
+  });
+
+  app.patch(`${apiPath}/reservations/:id/status`, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      const reservation = await storage.updateReservationStatus(id, status);
+      broadcastToAdmins({ type: "reservation_updated", reservation });
+      res.json(reservation);
+    } catch { res.status(500).json({ error: "Failed to update reservation" }); }
+  });
+
+  // ─── Diana API: Tables ──────────────────────────────────────────────────────
+
+  app.get(`${apiPath}/tables`, async (req, res) => {
+    try {
+      const tables = await storage.getAllTables();
+      res.json(tables);
+    } catch { res.status(500).json({ error: "Failed to fetch tables" }); }
+  });
+
+  app.patch(`${apiPath}/tables/:id`, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const table = await storage.updateTable(id, req.body);
+      broadcastToAdmins({ type: "table_updated", table });
+      res.json(table);
+    } catch { res.status(500).json({ error: "Failed to update table" }); }
+  });
+
+  app.post(`${apiPath}/tables/merge`, async (req, res) => {
+    try {
+      const { ids } = req.body as { ids: number[] };
+      if (!Array.isArray(ids) || ids.length < 2) {
+        return res.status(400).json({ error: "At least 2 table ids required" });
+      }
+      const merged = await storage.mergeTables(ids);
+      broadcastToAdmins({ type: "tables_merged", merged, ids });
+      res.json(merged);
+    } catch { res.status(500).json({ error: "Failed to merge tables" }); }
+  });
+
+  // ─── Diana API: Config ──────────────────────────────────────────────────────
+
+  app.get(`${apiPath}/diana/config`, async (req, res) => {
+    try {
+      const config = await storage.getDianaConfig();
+      res.json(config || {});
+    } catch { res.status(500).json({ error: "Failed to fetch Diana config" }); }
+  });
+
+  app.put(`${apiPath}/diana/config`, async (req, res) => {
+    try {
+      const config = await storage.upsertDianaConfig(req.body);
+      res.json(config);
+    } catch { res.status(500).json({ error: "Failed to update Diana config" }); }
+  });
+
+  // ─── Diana API: Logs / Memory ────────────────────────────────────────────────
+
+  app.get(`${apiPath}/diana/logs`, async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+      const logs = await storage.getDianaLogs(limit);
+      res.json(logs);
+    } catch { res.status(500).json({ error: "Failed to fetch Diana logs" }); }
+  });
+
+  app.post(`${apiPath}/diana/logs`, async (req, res) => {
+    try {
+      const log = await storage.addDianaLog(req.body);
+      res.status(201).json(log);
+    } catch { res.status(500).json({ error: "Failed to save Diana log" }); }
+  });
+
+  // ─── WebSocket Server ────────────────────────────────────────────────────────
+
   const httpServer = createServer(app);
+
+  const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
+  const adminClients = new Set<WebSocket>();
+
+  wss.on("connection", (ws) => {
+    ws.on("message", (data) => {
+      try {
+        const msg = JSON.parse(data.toString());
+        if (msg.type === "register" && msg.role === "admin") {
+          adminClients.add(ws);
+        }
+      } catch {}
+    });
+    ws.on("close", () => adminClients.delete(ws));
+    ws.on("error", () => adminClients.delete(ws));
+  });
+
+  function broadcastToAdmins(payload: Record<string, unknown>) {
+    const msg = JSON.stringify(payload);
+    adminClients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) client.send(msg);
+    });
+  }
+
   return httpServer;
 }

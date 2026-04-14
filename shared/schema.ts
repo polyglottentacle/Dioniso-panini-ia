@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -77,6 +77,60 @@ export const subscriptions = pgTable("subscriptions", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Diana — Eetcafé Full House reservations
+export const reservations = pgTable("reservations", {
+  id: serial("id").primaryKey(),
+  guestName: text("guest_name").notNull(),
+  guestPhone: text("guest_phone").notNull(),
+  guestEmail: text("guest_email"),
+  date: text("date").notNull(),       // "2026-04-13"
+  time: text("time").notNull(),       // "19:00"
+  partySize: integer("party_size").notNull(),
+  tableId: integer("table_id"),
+  status: text("status").notNull().default("pending"), // pending | confirmed | cancelled
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Diana — Restaurant floor map tables
+export const restaurantTables = pgTable("restaurant_tables", {
+  id: serial("id").primaryKey(),
+  label: text("label").notNull(),     // "T1", "VIP", "T-Terrazza"
+  x: real("x").notNull().default(50), // % position on map
+  y: real("y").notNull().default(50),
+  width: real("width").notNull().default(80),   // px
+  height: real("height").notNull().default(80),
+  capacity: integer("capacity").notNull().default(4),
+  status: text("status").notNull().default("free"), // free | occupied | reserved
+  mergedWith: json("merged_with").$type<number[]>().default([]),
+});
+
+// Diana — Conversation memory (ogni chiamata/chat salvata)
+export const dianaLogs = pgTable("diana_logs", {
+  id: serial("id").primaryKey(),
+  channel: text("channel").notNull().default("phone"), // phone | whatsapp | dashboard
+  role: text("role").notNull(),   // "guest" | "owner" | "diana"
+  message: text("message").notNull(),
+  intent: text("intent"),         // "reservation" | "menu_query" | "owner_mode" | "other"
+  metadata: json("metadata").$type<Record<string, unknown>>().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Diana — AI configuration for the restaurant
+export const dianaConfig = pgTable("diana_config", {
+  id: serial("id").primaryKey(),
+  restaurantName: text("restaurant_name").notNull().default("Eetcafé Full House"),
+  address: text("address").notNull().default("De Veste 1692, 8231 JK Lelystad"),
+  phone: text("phone").notNull().default("+31 320 282 428"),
+  openTime: text("open_time").notNull().default("17:00"),
+  closeTime: text("close_time").notNull().default("22:00"),
+  ownerPassphrase: text("owner_passphrase").notNull().default("sono il proprietario"),
+  elevenLabsVoiceId: text("eleven_labs_voice_id"),
+  menuJson: json("menu_json").$type<Record<string, unknown>>().default({}),
+  totalTables: integer("total_tables").notNull().default(10),
+  staffCount: integer("staff_count").notNull().default(3),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -99,6 +153,19 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   createdAt: true,
 });
 
+export const insertReservationSchema = createInsertSchema(reservations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRestaurantTableSchema = createInsertSchema(restaurantTables).omit({
+  id: true,
+});
+
+export const insertDianaConfigSchema = createInsertSchema(dianaConfig).omit({
+  id: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -117,3 +184,19 @@ export type OrderItem = typeof orderItems.$inferSelect;
 
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type Subscription = typeof subscriptions.$inferSelect;
+
+export type InsertReservation = z.infer<typeof insertReservationSchema>;
+export type Reservation = typeof reservations.$inferSelect;
+
+export type InsertRestaurantTable = z.infer<typeof insertRestaurantTableSchema>;
+export type RestaurantTable = typeof restaurantTables.$inferSelect;
+
+export type InsertDianaConfig = z.infer<typeof insertDianaConfigSchema>;
+export type DianaConfig = typeof dianaConfig.$inferSelect;
+
+export const insertDianaLogSchema = createInsertSchema(dianaLogs).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertDianaLog = z.infer<typeof insertDianaLogSchema>;
+export type DianaLog = typeof dianaLogs.$inferSelect;
