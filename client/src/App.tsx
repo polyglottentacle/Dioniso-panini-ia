@@ -7,10 +7,13 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AnimationProvider, PageTransition } from "@/contexts/AnimationContext";
+import { AudioProvider } from "@/contexts/AudioContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import AnimationToggle from "@/components/AnimationToggle";
+import AudioToggle from "@/components/AudioToggle";
 import HomePage from "@/pages/HomePage";
 import DashboardPage from "@/pages/DashboardPage";
+import ElenaPage from "@/pages/ElenaPage";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -33,6 +36,7 @@ function Router() {
         <Switch>
           <Route path="/" component={HomePage} />
           <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/elena" component={ElenaPage} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>
@@ -48,11 +52,14 @@ function App() {
           <CartProvider>
             <FavoritesProvider>
               <AnimationProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Router />
-                  <AnimationToggle />
-                </TooltipProvider>
+                <AudioProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Router />
+                    <AnimationToggle />
+                    <AudioToggle />
+                  </TooltipProvider>
+                </AudioProvider>
               </AnimationProvider>
             </FavoritesProvider>
           </CartProvider>

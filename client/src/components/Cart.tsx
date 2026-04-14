@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useAudioContext } from "@/contexts/AudioContext";
+import { useAudio } from "@/hooks/use-audio";
 import WhatsAppModal from "./WhatsAppModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartItem } from "@/lib/data";
@@ -8,6 +10,8 @@ import { CartItem } from "@/lib/data";
 export default function Cart() {
   const { t, language } = useLanguage();
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateCartItemQuantity } = useCart();
+  const { soundEnabled, volume } = useAudioContext();
+  const { playCartRemove } = useAudio(soundEnabled, volume);
   
   const [notes, setNotes] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("12:00");
@@ -96,8 +100,8 @@ export default function Cart() {
                         <div className="ml-4 flex-grow">
                           <div className="flex justify-between">
                             <h4 className="font-medium">{getProductName(item)}</h4>
-                            <button 
-                              onClick={() => removeFromCart(item.product.id)}
+                            <button
+                              onClick={() => { playCartRemove(); removeFromCart(item.product.id); }}
                               className="text-gray-400 hover:text-red-500"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

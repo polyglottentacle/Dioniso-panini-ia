@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useAudioContext } from "@/contexts/AudioContext";
 import CountdownTimer from "./CountdownTimer";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { LayoutDashboard } from "lucide-react";
@@ -19,6 +20,21 @@ export default function Header() {
   const { t } = useLanguage();
   const { user, login, logout, loading } = useAuth();
   const { cartItems, toggleCart } = useCart();
+  const { soundEnabled } = useAudioContext();
+  const prevUserRef = useRef<typeof user>(null);
+
+  // Saluto vocale personalizzato al login (Web Speech API)
+  useEffect(() => {
+    if (user && !prevUserRef.current && soundEnabled && window.speechSynthesis) {
+      const name = user.displayName || user.email || "amico";
+      const utterance = new SpeechSynthesisUtterance(`Benvenuto, ${name}!`);
+      utterance.lang = "it-IT";
+      utterance.rate = 0.9;
+      utterance.volume = 0.8;
+      window.speechSynthesis.speak(utterance);
+    }
+    prevUserRef.current = user;
+  }, [user, soundEnabled]);
   
   // Calculate total items in cart
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);

@@ -2,6 +2,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { CartItem } from "@/lib/data";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
+import { useAudioContext } from "@/contexts/AudioContext";
+import { useAudio } from "@/hooks/use-audio";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
@@ -28,6 +30,8 @@ const generateOrderNumber = () => {
 export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time, notes }: WhatsAppModalProps) {
   const { t, language } = useLanguage();
   const { clearCart, toggleCart } = useCart();
+  const { soundEnabled, volume } = useAudioContext();
+  const { playCheckout } = useAudio(soundEnabled, volume);
   const { toast } = useToast();
   
   // Stato per il numero d'ordine
@@ -148,6 +152,7 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
                 rel="noopener noreferrer"
                 className="py-2 bg-green-600 text-white rounded-lg font-medium text-center hover:bg-green-700 transition shadow-md text-sm"
                 onClick={() => {
+                  playCheckout();
                   setTimeout(() => {
                     clearCart();
                     onClose();
@@ -162,12 +167,13 @@ export default function WhatsAppModal({ isOpen, onClose, cartItems, total, time,
               >
                 WhatsApp
               </a>
-              <a 
+              <a
                 href={telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-2 bg-blue-500 text-white rounded-lg font-medium text-center hover:bg-blue-600 transition shadow-md text-sm"
                 onClick={() => {
+                  playCheckout();
                   setTimeout(() => {
                     clearCart();
                     onClose();

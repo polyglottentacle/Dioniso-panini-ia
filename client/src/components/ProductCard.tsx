@@ -1,6 +1,8 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useAudioContext } from "@/contexts/AudioContext";
+import { useAudio } from "@/hooks/use-audio";
 import { Product } from "@/lib/data";
 import { motion } from "framer-motion";
 import { memo, useMemo, useCallback } from "react";
@@ -14,6 +16,8 @@ function ProductCard({ product }: ProductCardProps) {
   const { language, t } = useLanguage();
   const { addToCart } = useCart();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { soundEnabled, volume } = useAudioContext();
+  const { playCartAdd } = useAudio(soundEnabled, volume);
   
   // Memorizziamo il nome e la descrizione del prodotto nella lingua corrente
   const productTexts = useMemo(() => {
@@ -45,7 +49,8 @@ function ProductCard({ product }: ProductCardProps) {
   // Memorizziamo la funzione per evitare render inutili
   const handleAddToCart = useCallback(() => {
     addToCart(product);
-  }, [addToCart, product]);
+    playCartAdd();
+  }, [addToCart, product, playCartAdd]);
   
   // Gestione dei preferiti
   const isProductFavorite = useMemo(() => isFavorite(product.id), [isFavorite, product.id]);
