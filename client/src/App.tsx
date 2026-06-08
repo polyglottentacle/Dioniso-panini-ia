@@ -14,6 +14,7 @@ import AudioToggle from "@/components/AudioToggle";
 import HomePage from "@/pages/HomePage";
 import DashboardPage from "@/pages/DashboardPage";
 import ElenaPage from "@/pages/ElenaPage";
+import BookingPage from "@/pages/BookingPage";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/" component={HomePage} />
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/elena" component={ElenaPage} />
+          <Route path="/prenota" component={BookingPage} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>
