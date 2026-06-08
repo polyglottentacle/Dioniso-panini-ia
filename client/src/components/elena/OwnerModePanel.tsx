@@ -23,7 +23,7 @@ interface BriefingResponse {
 }
 
 const DIANA_GREETING =
-  "Che piacere sentirti. Spero che il tuo locale stia andando bene. Come posso aiutarti oggi?";
+  "Goedemorgen Jan! Fijn dat je er bent. Alles staat klaar voor vandaag. Kan ik je ergens mee helpen?";
 
 export default function OwnerModePanel({ isOpen, onClose }: OwnerModePanelProps) {
   const { soundEnabled, volume } = useAudioContext();
@@ -42,7 +42,7 @@ export default function OwnerModePanel({ isOpen, onClose }: OwnerModePanelProps)
       playOwnerMode();
       if (window.speechSynthesis) {
         const utterance = new SpeechSynthesisUtterance(DIANA_GREETING);
-        utterance.lang = "it-IT";
+        utterance.lang = "nl-NL";
         utterance.rate = 0.88;
         utterance.pitch = 1.05;
         utterance.volume = soundEnabled ? 0.9 : 0;
@@ -393,7 +393,7 @@ export default function OwnerModePanel({ isOpen, onClose }: OwnerModePanelProps)
                       color: "#5a4a6a",
                     }}
                   >
-                    System prompt attivo — usato dall'agente AI al telefono
+                    Prompt attivo — Elena risponde al telefono di Jan
                   </div>
                   <BrainPreview />
                 </div>

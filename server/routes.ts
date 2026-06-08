@@ -350,13 +350,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .filter((r) => r.status !== "cancelled")
         .reduce((s, r) => s + r.partySize, 0);
 
+      const openingHours = config
+        ? `${config.openDays ?? "Dinsdag t/m zondag"}, ${config.openTime ?? "11:00"}–${config.closeTime ?? "22:00"}`
+        : undefined;
+
       const prompt = buildElenaSystemPrompt({
-        restaurantName: (config as { restaurantName?: string })?.restaurantName ?? "Eetcafé Full House",
-        ownerName: (config as { ownerName?: string })?.ownerName ?? "de eigenaar",
-        voicePersona: (config as { voicePersona?: "owner" | "collaborator" | "elena" })?.voicePersona ?? "elena",
-        todayMenu: (config as { todayMenu?: string })?.todayMenu,
-        tomorrowMenu: (config as { tomorrowMenu?: string })?.tomorrowMenu,
-        openingHours: (config as { openingHours?: string })?.openingHours,
+        restaurantName: config?.restaurantName ?? "Eetcafé Full House",
+        ownerName: config?.ownerName ?? "Jan",
+        voicePersona: (config?.voicePersona as "owner" | "collaborator" | "elena") ?? "elena",
+        todayMenu: config?.todayMenu ?? undefined,
+        tomorrowMenu: config?.tomorrowMenu ?? undefined,
+        openingHours,
         reservationsToday: reservations.map((r) => ({
           time: r.time,
           guestName: r.guestName,
@@ -376,7 +380,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const config = await storage.getDianaConfig();
       const reservations = await storage.getTodayReservations();
-      const ownerName = (config as { ownerName?: string })?.ownerName ?? "de eigenaar";
+      const ownerName = config?.ownerName ?? "Jan";
 
       const now = new Date();
       const date = now.toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
