@@ -4,6 +4,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, insertReservationSchema, type InsertUser } from "@shared/schema";
+import { buildElenaSystemPrompt, buildOwnerBriefing, generateElenaAdvice } from "./elena-brain";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -336,6 +337,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const config = await storage.upsertDianaConfig(req.body);
       res.json(config);
     } catch { res.status(500).json({ error: "Failed to update Diana config" }); }
+  });
+
+  // ─── Elena Brain API ─────────────────────────────────────────────────────────
+
+  // Returns the full LLM system prompt for the phone agent
+  app.get(`${apiPath}/elena/brain`, async (req, res) => {
+    try {
+      const config = await storage.getDianaConfig();
+      const reservations = await storage.getTodayReservations();
+      const totalCovers = reservations
+        .filter((r) => r.status !== "cancelled")
+        .reduce((s, r) => s + r.partySize, 0);
+
+      const prompt = buildElenaSystemPrompt({
+        restaurantName: (config as { restaurantName?: string })?.restaurantName ?? "Eetcafé Full House",
+        ownerName: (config as { ownerName?: string })?.ownerName ?? "de eigenaar",
+        voicePersona: (config as { voicePersona?: "owner" | "collaborator" | "elena" })?.voicePersona ?? "elena",
+        todayMenu: (config as { todayMenu?: string })?.todayMenu,
+        tomorrowMenu: (config as { tomorrowMenu?: string })?.tomorrowMenu,
+        openingHours: (config as { openingHours?: string })?.openingHours,
+        reservationsToday: reservations.map((r) => ({
+          time: r.time,
+          guestName: r.guestName,
+          partySize: r.partySize,
+          status: r.status,
+          notes: r.notes ?? undefined,
+        })),
+        totalCoversToday: totalCovers,
+      });
+
+      res.json({ prompt, generatedAt: new Date().toISOString() });
+    } catch { res.status(500).json({ error: "Failed to generate Elena brain" }); }
+  });
+
+  // Returns the morning briefing for the owner
+  app.get(`${apiPath}/elena/briefing`, async (req, res) => {
+    try {
+      const config = await storage.getDianaConfig();
+      const reservations = await storage.getTodayReservations();
+      const ownerName = (config as { ownerName?: string })?.ownerName ?? "de eigenaar";
+
+      const now = new Date();
+      const date = now.toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+      const dayOfWeek = now.toLocaleDateString("nl-NL", { weekday: "long" });
+      const currentHour = now.getHours();
+
+      const summaries = reservations.map((r) => ({
+        time: r.time,
+        guestName: r.guestName,
+        partySize: r.partySize,
+        status: r.status,
+        notes: r.notes ?? undefined,
+      }));
+
+      const tips = generateElenaAdvice(summaries, currentHour);
+      const briefing = buildOwnerBriefing(ownerName, date, dayOfWeek, summaries, undefined, tips);
+
+      const active = summaries.filter((r) => r.status !== "cancelled");
+      const totalCovers = active.reduce((s, r) => s + r.partySize, 0);
+      const pending = summaries.filter((r) => r.status === "pending").length;
+
+      res.json({
+        text: briefing,
+        stats: {
+          reservationsToday: active.length,
+          totalCovers,
+          pending,
+          tips,
+        },
+        generatedAt: now.toISOString(),
+      });
+    } catch { res.status(500).json({ error: "Failed to generate briefing" }); }
   });
 
   // ─── Diana API: Logs / Memory ────────────────────────────────────────────────
