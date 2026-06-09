@@ -6,6 +6,7 @@ import { z } from "zod";
 import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, insertReservationSchema, type InsertUser } from "@shared/schema";
 import { buildElenaSystemPrompt, buildOwnerBriefing, generateElenaAdvice } from "./elena-brain";
 import { handleChatTurn } from "./elena-chat/index";
+import { findBestTable, applyDerivedStatus } from "./table-assign";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -251,10 +252,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ─── Diana API: Reservations ────────────────────────────────────────────────
 
+  // Creates a reservation, auto-assigning the best free table for that slot.
+  // Shared by the booking form and Elena's chat.
+  async function createReservationAssigned(data: z.infer<typeof insertReservationSchema>) {
+    let assigned = data;
+    if (assigned.tableId == null) {
+      const tables = await storage.getAllTables();
+      const existing = await storage.getAllReservations();
+      const best = findBestTable(tables, existing, assigned.date, assigned.time, assigned.partySize);
+      if (best) assigned = { ...assigned, tableId: best.id };
+    }
+    return await storage.createReservation(assigned);
+  }
+
   app.post(`${apiPath}/reservations`, async (req, res) => {
     try {
       const data = insertReservationSchema.parse(req.body);
-      const reservation = await storage.createReservation(data);
+      const reservation = await createReservationAssigned(data);
       broadcastToAdmins({ type: "new_reservation", reservation });
       res.status(201).json(reservation);
     } catch (error) {
@@ -299,7 +313,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get(`${apiPath}/tables`, async (req, res) => {
     try {
       const tables = await storage.getAllTables();
-      res.json(tables);
+      // Map status derives from real upcoming bookings (manual "occupied" wins)
+      const today = await storage.getTodayReservations();
+      res.json(applyDerivedStatus(tables, today));
     } catch { res.status(500).json({ error: "Failed to fetch tables" }); }
   });
 
@@ -471,13 +487,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await handleChatTurn(sessionId, safeMessage, async (data) => {
         const parsed = insertReservationSchema.parse(data);
-        return await storage.createReservation(parsed);
+        return await createReservationAssigned(parsed);
       });
 
       // Side effect: broadcast so admin sees the new reservation in real time
       const rawResult = result as unknown as Record<string, unknown>;
-      if (rawResult._reservation) {
-        broadcastToAdmins({ type: "new_reservation", reservation: rawResult._reservation });
+      const created = rawResult._reservation as { tableId?: number | null } | undefined;
+      if (created) {
+        broadcastToAdmins({ type: "new_reservation", reservation: created });
+
+        // Tell the guest which table they got
+        if (created.tableId != null && typeof rawResult.reply === "string") {
+          const tables = await storage.getAllTables();
+          const table = tables.find((t) => t.id === created.tableId);
+          if (table) {
+            rawResult.reply = `${rawResult.reply} U zit aan tafel ${table.label}.`;
+          }
+        }
       }
 
       const { _reservation, ...response } = rawResult;
