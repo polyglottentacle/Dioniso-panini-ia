@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -12,17 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { TableData } from "@/components/elena/TableSquare";
 
-// Tavoli demo per quando il DB è vuoto
-const DEMO_TABLES: TableData[] = [
-  { id: 1, label: "T1", x: 15, y: 20, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
-  { id: 2, label: "T2", x: 40, y: 20, width: 80, height: 80, capacity: 4, status: "reserved", mergedWith: [] },
-  { id: 3, label: "T3", x: 65, y: 20, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
-  { id: 4, label: "VIP", x: 28, y: 55, width: 120, height: 80, capacity: 8, status: "occupied", mergedWith: [] },
-  { id: 5, label: "T5", x: 70, y: 55, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
-  { id: 6, label: "T6", x: 85, y: 80, width: 80, height: 80, capacity: 2, status: "free", mergedWith: [] },
-  { id: 7, label: "T7", x: 15, y: 80, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
-];
-
 export default function ElenaPage() {
   const qc = useQueryClient();
   const [ownerModeOpen, setOwnerModeOpen] = useState(false);
@@ -30,17 +19,48 @@ export default function ElenaPage() {
   const { soundEnabled, volume } = useAudioContext();
   const { playNewReservationAlert } = useAudio(soundEnabled, volume);
 
-  const { data: tablesFromDB } = useQuery<TableData[]>({
+  // The server (MemStorage or DB) always seeds the floor plan — no client demo data
+  const { data: tables = [] } = useQuery<TableData[]>({
     queryKey: ["/api/tables"],
     retry: false,
   });
 
-  const tables: TableData[] = (tablesFromDB && tablesFromDB.length > 0) ? tablesFromDB : DEMO_TABLES;
-
+  // Optimistic position update: the table stays where you dropped it,
+  // rolls back with a toast only if the server rejects the move
   const updateTableMutation = useMutation({
     mutationFn: ({ id, x, y }: { id: number; x: number; y: number }) =>
       apiRequest("PATCH", `/api/tables/${id}`, { x, y }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["/api/tables"] }),
+    onMutate: async ({ id, x, y }) => {
+      await qc.cancelQueries({ queryKey: ["/api/tables"] });
+      const previous = qc.getQueryData<TableData[]>(["/api/tables"]);
+      qc.setQueryData<TableData[]>(["/api/tables"], (old) =>
+        (old ?? []).map((t) => (t.id === id ? { ...t, x, y } : t))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) qc.setQueryData(["/api/tables"], ctx.previous);
+      toast({ title: "Spostamento non salvato", description: "Il server ha rifiutato la modifica. Riprova.", variant: "destructive" });
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["/api/tables"] }),
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: TableData["status"] }) =>
+      apiRequest("PATCH", `/api/tables/${id}`, { status }),
+    onMutate: async ({ id, status }) => {
+      await qc.cancelQueries({ queryKey: ["/api/tables"] });
+      const previous = qc.getQueryData<TableData[]>(["/api/tables"]);
+      qc.setQueryData<TableData[]>(["/api/tables"], (old) =>
+        (old ?? []).map((t) => (t.id === id ? { ...t, status } : t))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) qc.setQueryData(["/api/tables"], ctx.previous);
+      toast({ title: "Stato non salvato", description: "Riprova.", variant: "destructive" });
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["/api/tables"] }),
   });
 
   const mergeTablesMutation = useMutation({
@@ -48,6 +68,20 @@ export default function ElenaPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["/api/tables"] });
       toast({ title: "Tavoli uniti!", description: "La mappa è stata aggiornata." });
+    },
+    onError: () => {
+      toast({ title: "Unione non riuscita", description: "Controlla i tavoli selezionati e riprova.", variant: "destructive" });
+    },
+  });
+
+  const unmergeTableMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", "/api/tables/unmerge", { id }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/tables"] });
+      toast({ title: "Tavoli divisi", description: "Il tavolo è tornato alla configurazione originale." });
+    },
+    onError: () => {
+      toast({ title: "Divisione non riuscita", description: "Riprova.", variant: "destructive" });
     },
   });
 
@@ -58,6 +92,14 @@ export default function ElenaPage() {
   const handleMergeTables = useCallback((ids: number[]) => {
     mergeTablesMutation.mutate(ids);
   }, [mergeTablesMutation]);
+
+  const handleUnmergeTable = useCallback((id: number) => {
+    unmergeTableMutation.mutate(id);
+  }, [unmergeTableMutation]);
+
+  const handleStatusCycle = useCallback((id: number, status: TableData["status"]) => {
+    statusMutation.mutate({ id, status });
+  }, [statusMutation]);
 
   // WebSocket — aggiornamenti in tempo reale sulla mappa
   const handleWSMessage = useCallback((msg: WSMessage) => {
@@ -79,11 +121,12 @@ export default function ElenaPage() {
   useWebSocket({ onMessage: handleWSMessage });
 
   // "Colpo di scena" — longpress sul logo Diana (500ms)
-  let pressTimer: ReturnType<typeof setTimeout>;
+  const pressTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const handleLogoPressStart = () => {
-    pressTimer = setTimeout(() => setOwnerModeOpen(true), 500);
+    clearTimeout(pressTimerRef.current);
+    pressTimerRef.current = setTimeout(() => setOwnerModeOpen(true), 500);
   };
-  const handleLogoPressEnd = () => clearTimeout(pressTimer);
+  const handleLogoPressEnd = () => clearTimeout(pressTimerRef.current);
 
   const tableStats = {
     free: tables.filter((t) => t.status === "free").length,
@@ -184,6 +227,8 @@ export default function ElenaPage() {
               tables={tables}
               onTableUpdate={handleTableUpdate}
               onMergeTables={handleMergeTables}
+              onUnmergeTable={handleUnmergeTable}
+              onStatusCycle={handleStatusCycle}
             />
           </div>
         </div>

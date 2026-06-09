@@ -52,6 +52,7 @@ export interface IStorage {
   getAllTables(): Promise<RestaurantTable[]>;
   updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable>;
   mergeTables(ids: number[]): Promise<RestaurantTable>;
+  unmergeTables(primaryId: number): Promise<RestaurantTable>;
 
   // Diana — Config
   getDianaConfig(): Promise<DianaConfig | undefined>;
@@ -254,31 +255,63 @@ export class DatabaseStorage implements IStorage {
   }
 
   async mergeTables(ids: number[]): Promise<RestaurantTable> {
-    // Mark secondary tables as merged into primary, update primary capacity
-    const tables = await db.select().from(restaurantTables).where(
-      eq(restaurantTables.id, ids[0])
-    );
-    const primary = tables[0];
-    const secondaryIds = ids.slice(1);
+    const all = await db.select().from(restaurantTables);
+    const primary = all.find((t) => t.id === ids[0]);
+    if (!primary) throw new Error(`Table ${ids[0]} not found`);
+    const secondaries = ids.slice(1)
+      .map((sid) => all.find((t) => t.id === sid))
+      .filter((t): t is RestaurantTable => !!t);
+    if (secondaries.length === 0) throw new Error("No valid secondary tables");
 
-    // Increase width of primary to represent merged table
+    // Sum the real capacities of the merged tables
+    const extraCapacity = secondaries.reduce((sum, s) => sum + (s.capacity ?? 2), 0);
+
     const [merged] = await db.update(restaurantTables)
       .set({
-        width: (primary.width || 80) + secondaryIds.length * 90,
-        capacity: (primary.capacity || 4) + secondaryIds.length * 2,
-        mergedWith: secondaryIds,
+        width: (primary.width || 80) + secondaries.length * 90,
+        capacity: (primary.capacity || 4) + extraCapacity,
+        mergedWith: secondaries.map((s) => s.id),
       })
       .where(eq(restaurantTables.id, ids[0]))
       .returning();
 
-    // Mark secondary tables as occupied/hidden
-    for (const sid of secondaryIds) {
+    for (const s of secondaries) {
       await db.update(restaurantTables)
         .set({ status: 'occupied' })
-        .where(eq(restaurantTables.id, sid));
+        .where(eq(restaurantTables.id, s.id));
     }
 
     return merged;
+  }
+
+  async unmergeTables(primaryId: number): Promise<RestaurantTable> {
+    const all = await db.select().from(restaurantTables);
+    const primary = all.find((t) => t.id === primaryId);
+    if (!primary) throw new Error(`Table ${primaryId} not found`);
+    const mergedIds = (primary.mergedWith ?? []) as number[];
+    if (mergedIds.length === 0) throw new Error("Table is not merged");
+
+    const secondaries = mergedIds
+      .map((id) => all.find((t) => t.id === id))
+      .filter((t): t is RestaurantTable => !!t);
+    const extraCapacity = secondaries.reduce((sum, s) => sum + (s.capacity ?? 2), 0);
+
+    const [restored] = await db.update(restaurantTables)
+      .set({
+        width: Math.max(70, (primary.width || 80) - mergedIds.length * 90),
+        capacity: Math.max(2, (primary.capacity || 4) - extraCapacity),
+        mergedWith: [],
+      })
+      .where(eq(restaurantTables.id, primaryId))
+      .returning();
+
+    for (const s of secondaries) {
+      await db.update(restaurantTables)
+        .set({ status: 'free' })
+        .where(eq(restaurantTables.id, s.id));
+    }
+
+    return restored;
   }
 
   // Diana — Config
@@ -324,6 +357,7 @@ export class MemStorage implements IStorage {
   constructor() {
     this.users = new Map();
     this.currentId = 1;
+    this.seedTables();
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -435,10 +469,28 @@ export class MemStorage implements IStorage {
   }
   private reservations: Map<number, Reservation> = new Map();
   private tables: Map<number, RestaurantTable> = new Map();
+  private mergeSnapshots: Map<number, { width: number; capacity: number; secondaries: { id: number; status: string }[] }> = new Map();
   private dianaConfigData: DianaConfig | undefined = undefined;
   private dianaLogsData: DianaLog[] = [];
   private nextResId = 1;
   private nextTableId = 1;
+
+  private seedTables() {
+    // Seed the Full House floor plan so the map works without a database
+    const seed: Omit<RestaurantTable, "id">[] = [
+      { label: "T1", x: 15, y: 25, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
+      { label: "T2", x: 40, y: 25, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
+      { label: "T3", x: 65, y: 25, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
+      { label: "VIP", x: 28, y: 55, width: 120, height: 80, capacity: 8, status: "free", mergedWith: [] },
+      { label: "T5", x: 70, y: 55, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
+      { label: "T6", x: 80, y: 78, width: 70, height: 70, capacity: 2, status: "free", mergedWith: [] },
+      { label: "T7", x: 15, y: 78, width: 80, height: 80, capacity: 4, status: "free", mergedWith: [] },
+    ];
+    for (const t of seed) {
+      const id = this.nextTableId++;
+      this.tables.set(id, { ...t, id } as RestaurantTable);
+    }
+  }
 
   async createReservation(data: InsertReservation): Promise<Reservation> {
     const r = { ...data, id: this.nextResId++, status: data.status ?? "pending", notes: data.notes ?? null } as Reservation;
@@ -466,14 +518,63 @@ export class MemStorage implements IStorage {
     return Array.from(this.tables.values());
   }
   async updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable> {
-    const t = this.tables.get(id) ?? { id } as RestaurantTable;
+    const t = this.tables.get(id);
+    if (!t) throw new Error(`Table ${id} not found`);
     const updated = { ...t, ...data } as RestaurantTable;
     this.tables.set(id, updated);
     return updated;
   }
   async mergeTables(ids: number[]): Promise<RestaurantTable> {
-    const primary = this.tables.get(ids[0]) ?? { id: ids[0] } as RestaurantTable;
-    return primary;
+    const primary = this.tables.get(ids[0]);
+    if (!primary) throw new Error(`Table ${ids[0]} not found`);
+    const secondaries = ids.slice(1)
+      .map((sid) => this.tables.get(sid))
+      .filter((t): t is RestaurantTable => !!t);
+    if (secondaries.length === 0) throw new Error("No valid secondary tables");
+
+    // Snapshot for unmerge
+    this.mergeSnapshots.set(primary.id, {
+      width: primary.width,
+      capacity: primary.capacity,
+      secondaries: secondaries.map((s) => ({ id: s.id, status: s.status })),
+    });
+
+    const extraCapacity = secondaries.reduce((sum, s) => sum + (s.capacity ?? 2), 0);
+    const merged = {
+      ...primary,
+      width: primary.width + secondaries.length * 90,
+      capacity: primary.capacity + extraCapacity,
+      mergedWith: secondaries.map((s) => s.id),
+    } as RestaurantTable;
+    this.tables.set(primary.id, merged);
+
+    for (const s of secondaries) {
+      this.tables.set(s.id, { ...s, status: "occupied" } as RestaurantTable);
+    }
+    return merged;
+  }
+  async unmergeTables(primaryId: number): Promise<RestaurantTable> {
+    const primary = this.tables.get(primaryId);
+    if (!primary) throw new Error(`Table ${primaryId} not found`);
+    const snap = this.mergeSnapshots.get(primaryId);
+    const mergedIds = (primary.mergedWith ?? []) as number[];
+    if (!snap && mergedIds.length === 0) throw new Error("Table is not merged");
+
+    const restored = {
+      ...primary,
+      width: snap?.width ?? Math.max(70, primary.width - mergedIds.length * 90),
+      capacity: snap?.capacity ?? Math.max(2, primary.capacity - mergedIds.length * 2),
+      mergedWith: [],
+    } as RestaurantTable;
+    this.tables.set(primaryId, restored);
+
+    const secondaryStates = snap?.secondaries ?? mergedIds.map((id) => ({ id, status: "free" }));
+    for (const { id, status } of secondaryStates) {
+      const s = this.tables.get(id);
+      if (s) this.tables.set(id, { ...s, status } as RestaurantTable);
+    }
+    this.mergeSnapshots.delete(primaryId);
+    return restored;
   }
   async getDianaConfig(): Promise<DianaConfig | undefined> { return this.dianaConfigData; }
   async upsertDianaConfig(data: Partial<DianaConfig>): Promise<DianaConfig> {

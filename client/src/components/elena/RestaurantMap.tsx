@@ -1,12 +1,12 @@
 import { useState, useCallback } from "react";
 import TableSquare, { type TableData } from "./TableSquare";
-import { useAudioContext } from "@/contexts/AudioContext";
-import { useAudio } from "@/hooks/use-audio";
 
 interface RestaurantMapProps {
   tables: TableData[];
   onTableUpdate: (id: number, x: number, y: number) => void;
   onMergeTables: (ids: number[]) => void;
+  onUnmergeTable: (id: number) => void;
+  onStatusCycle: (id: number, status: TableData["status"]) => void;
 }
 
 function BarCounter() {
@@ -200,40 +200,16 @@ export default function RestaurantMap({
   tables,
   onTableUpdate,
   onMergeTables,
+  onUnmergeTable,
+  onStatusCycle,
 }: RestaurantMapProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const { soundEnabled, volume } = useAudioContext();
-  const { playTableClick } = useAudio(soundEnabled, volume);
 
   const handleSelect = useCallback((id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   }, []);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  };
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      const id = parseInt(e.dataTransfer.getData("tableId"));
-      if (!id) return;
-
-      const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-      const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-      const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-
-      const x = Math.min(92, Math.max(8, xPct));
-      const y = Math.min(87, Math.max(18, yPct));
-
-      playTableClick();
-      onTableUpdate(id, x, y);
-    },
-    [onTableUpdate, playTableClick]
-  );
 
   const handleMerge = () => {
     if (selectedIds.length < 2) return;
@@ -242,6 +218,18 @@ export default function RestaurantMap({
   };
 
   const handleClearSelection = () => setSelectedIds([]);
+
+  // "Dividi" appears when exactly one merged table is selected
+  const selectedMergedTable =
+    selectedIds.length === 1
+      ? tables.find((t) => t.id === selectedIds[0] && t.mergedWith?.length > 0)
+      : undefined;
+
+  const handleUnmerge = () => {
+    if (!selectedMergedTable) return;
+    onUnmergeTable(selectedMergedTable.id);
+    setSelectedIds([]);
+  };
 
   return (
     <div className="flex flex-col h-full gap-3">
@@ -320,6 +308,26 @@ export default function RestaurantMap({
                   Unisci →
                 </button>
               )}
+              {selectedMergedTable && (
+                <button
+                  onClick={handleUnmerge}
+                  style={{
+                    fontSize: "10px",
+                    padding: "3px 10px",
+                    background: "#160926",
+                    color: "#e4c07f",
+                    border: "2px solid #e4c07f",
+                    borderRadius: "3px",
+                    boxShadow: "3px 3px 0 #0a0010",
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  ÷ Dividi
+                </button>
+              )}
             </>
           )}
         </div>
@@ -335,8 +343,6 @@ export default function RestaurantMap({
           borderRadius: "6px",
           minHeight: "320px",
         }}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
       >
         {/* Floor dot texture */}
         <div
@@ -398,6 +404,7 @@ export default function RestaurantMap({
             selected={selectedIds.includes(table.id)}
             onSelect={handleSelect}
             onDrop={onTableUpdate}
+            onStatusCycle={onStatusCycle}
           />
         ))}
 
@@ -414,7 +421,7 @@ export default function RestaurantMap({
           textTransform: "uppercase",
         }}
       >
-        Clicca · Trascina · 2+ per unire
+        Tocca = seleziona · Trascina = sposta · Doppio tocco = stato · 2+ per unire
       </p>
     </div>
   );

@@ -303,25 +303,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch { res.status(500).json({ error: "Failed to fetch tables" }); }
   });
 
+  const tablePatchSchema = z.object({
+    x: z.number().min(0).max(100).optional(),
+    y: z.number().min(0).max(100).optional(),
+    label: z.string().min(1).max(20).optional(),
+    width: z.number().min(40).max(400).optional(),
+    height: z.number().min(40).max(400).optional(),
+    capacity: z.number().int().min(1).max(30).optional(),
+    status: z.enum(["free", "occupied", "reserved"]).optional(),
+  }).strict();
+
   app.patch(`${apiPath}/tables/:id`, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const table = await storage.updateTable(id, req.body);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid table id" });
+      const data = tablePatchSchema.parse(req.body);
+      const table = await storage.updateTable(id, data);
       broadcastToAdmins({ type: "table_updated", table });
       res.json(table);
-    } catch { res.status(500).json({ error: "Failed to update table" }); }
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid table data", details: err.errors });
+      }
+      if (err instanceof Error && err.message.includes("not found")) {
+        return res.status(404).json({ error: err.message });
+      }
+      res.status(500).json({ error: "Failed to update table" });
+    }
   });
 
   app.post(`${apiPath}/tables/merge`, async (req, res) => {
     try {
       const { ids } = req.body as { ids: number[] };
-      if (!Array.isArray(ids) || ids.length < 2) {
-        return res.status(400).json({ error: "At least 2 table ids required" });
+      if (!Array.isArray(ids) || ids.length < 2 || !ids.every((n) => Number.isInteger(n))) {
+        return res.status(400).json({ error: "At least 2 integer table ids required" });
       }
       const merged = await storage.mergeTables(ids);
       broadcastToAdmins({ type: "tables_merged", merged, ids });
       res.json(merged);
-    } catch { res.status(500).json({ error: "Failed to merge tables" }); }
+    } catch (err) {
+      if (err instanceof Error && (err.message.includes("not found") || err.message.includes("secondary"))) {
+        return res.status(404).json({ error: err.message });
+      }
+      res.status(500).json({ error: "Failed to merge tables" });
+    }
+  });
+
+  app.post(`${apiPath}/tables/unmerge`, async (req, res) => {
+    try {
+      const { id } = req.body as { id: number };
+      if (!Number.isInteger(id)) {
+        return res.status(400).json({ error: "Table id required" });
+      }
+      const restored = await storage.unmergeTables(id);
+      broadcastToAdmins({ type: "tables_merged", merged: restored, ids: [id] });
+      res.json(restored);
+    } catch (err) {
+      if (err instanceof Error && (err.message.includes("not found") || err.message.includes("not merged"))) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.status(500).json({ error: "Failed to unmerge table" });
+    }
   });
 
   // ─── Diana API: Config ──────────────────────────────────────────────────────
