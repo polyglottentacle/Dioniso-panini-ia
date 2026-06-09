@@ -247,7 +247,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable> {
     const [table] = await db.update(restaurantTables)
-      .set(data)
+      .set(data as any)
       .where(eq(restaurantTables.id, id))
       .returning();
     return table;
