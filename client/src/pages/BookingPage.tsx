@@ -8,6 +8,10 @@ import {
   CATEGORY_ORDER,
   type MenuItem,
 } from "@shared/menu-data";
+import MenuItemCard from "@/components/menu/MenuItemCard";
+
+// Categories shown as rich visual cards (video + reviews); others as rows
+const RICH_CATEGORIES: MenuItem["category"][] = ["starter", "main"];
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const INK = "#0a0a0a";
@@ -132,9 +136,22 @@ function MenuSection({
             transition={{ duration: 0.18 }}
             style={{ overflow: "hidden" }}
           >
-            {items.map((item) => (
-              <MenuCard key={item.id} item={item} />
-            ))}
+            {RICH_CATEGORIES.includes(category) ? (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                  gap: "12px",
+                  paddingTop: "12px",
+                }}
+              >
+                {items.map((item) => (
+                  <MenuItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              items.map((item) => <MenuCard key={item.id} item={item} />)
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -467,7 +467,7 @@ export class MemStorage implements IStorage {
   }
   async updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable> {
     const t = this.tables.get(id) ?? { id } as RestaurantTable;
-    const updated = { ...t, ...data };
+    const updated = { ...t, ...data } as RestaurantTable;
     this.tables.set(id, updated);
     return updated;
   }
