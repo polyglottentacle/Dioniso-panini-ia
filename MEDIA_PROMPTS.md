@@ -10,10 +10,12 @@ URL into `shared/menu-data.ts` (`videoUrl` / `photoUrl`).
 - **Photo:** Midjourney v7, Flux 1.1, DALL·E 4 — ask for **16:9**, photoreal.
 
 **Global style (prepend to every prompt):**
-> Cinematic food photography, warm golden hour lighting, shallow depth of
-> field, dark moody background with a subtle Dutch-orange (#e87722) rim
-> light, steam and motion, ultra appetizing, 4K, no text, no people's faces.
-> Seamless loop, slow camera push-in.
+> Cinematic food photography shot inside a warm Dutch eetcafé. Amber/golden
+> walls, dark wood tables, soft warm hanging lights. The food sits on a dark
+> wooden table with a white plate or rustic board. No people's faces. Shallow
+> depth of field, steam and motion, ultra appetizing, 4K, no text.
+> Seamless loop, slow camera push-in. The vibe is genuine, cozy, local —
+> NOT a Michelin-star restaurant. Think Eetcafé Full House, Lelystad.
 
 ---
 
