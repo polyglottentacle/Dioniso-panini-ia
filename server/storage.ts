@@ -433,19 +433,64 @@ export class MemStorage implements IStorage {
   async getDashboardStats() {
     return { totalOrders: 0, totalRevenue: 0, pendingOrders: 0, activeSubscriptions: 0 };
   }
-  async createReservation(data: InsertReservation): Promise<Reservation> { return {} as Reservation; }
-  async getTodayReservations(): Promise<Reservation[]> { return []; }
-  async getWeekReservations(): Promise<Reservation[]> { return []; }
-  async getAllReservations(): Promise<Reservation[]> { return []; }
-  async updateReservationStatus(id: number, status: string): Promise<Reservation> { return {} as Reservation; }
-  async getAllTables(): Promise<RestaurantTable[]> { return []; }
-  async updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable> { return {} as RestaurantTable; }
-  async mergeTables(ids: number[]): Promise<RestaurantTable> { return {} as RestaurantTable; }
-  async getDianaConfig(): Promise<DianaConfig | undefined> { return undefined; }
-  async upsertDianaConfig(data: Partial<DianaConfig>): Promise<DianaConfig> { return {} as DianaConfig; }
-  async addDianaLog(data: any): Promise<DianaLog> { return {} as DianaLog; }
-  async getDianaLogs(limit?: number): Promise<DianaLog[]> { return []; }
+  private reservations: Map<number, Reservation> = new Map();
+  private tables: Map<number, RestaurantTable> = new Map();
+  private dianaConfigData: DianaConfig | undefined = undefined;
+  private dianaLogsData: DianaLog[] = [];
+  private nextResId = 1;
+  private nextTableId = 1;
+
+  async createReservation(data: InsertReservation): Promise<Reservation> {
+    const r = { ...data, id: this.nextResId++, status: data.status ?? "pending", notes: data.notes ?? null } as Reservation;
+    this.reservations.set(r.id, r);
+    return r;
+  }
+  async getTodayReservations(): Promise<Reservation[]> {
+    const today = new Date().toISOString().split("T")[0];
+    return Array.from(this.reservations.values()).filter((r) => r.date === today);
+  }
+  async getWeekReservations(): Promise<Reservation[]> {
+    return Array.from(this.reservations.values());
+  }
+  async getAllReservations(): Promise<Reservation[]> {
+    return Array.from(this.reservations.values());
+  }
+  async updateReservationStatus(id: number, status: string): Promise<Reservation> {
+    const r = this.reservations.get(id);
+    if (!r) throw new Error("Not found");
+    const updated = { ...r, status };
+    this.reservations.set(id, updated);
+    return updated;
+  }
+  async getAllTables(): Promise<RestaurantTable[]> {
+    return Array.from(this.tables.values());
+  }
+  async updateTable(id: number, data: Partial<InsertRestaurantTable>): Promise<RestaurantTable> {
+    const t = this.tables.get(id) ?? { id } as RestaurantTable;
+    const updated = { ...t, ...data };
+    this.tables.set(id, updated);
+    return updated;
+  }
+  async mergeTables(ids: number[]): Promise<RestaurantTable> {
+    const primary = this.tables.get(ids[0]) ?? { id: ids[0] } as RestaurantTable;
+    return primary;
+  }
+  async getDianaConfig(): Promise<DianaConfig | undefined> { return this.dianaConfigData; }
+  async upsertDianaConfig(data: Partial<DianaConfig>): Promise<DianaConfig> {
+    this.dianaConfigData = { ...(this.dianaConfigData ?? {}), ...data } as DianaConfig;
+    return this.dianaConfigData;
+  }
+  async addDianaLog(data: any): Promise<DianaLog> {
+    const log = { ...data, id: this.dianaLogsData.length + 1, createdAt: new Date() } as DianaLog;
+    this.dianaLogsData.push(log);
+    return log;
+  }
+  async getDianaLogs(limit = 100): Promise<DianaLog[]> {
+    return this.dianaLogsData.slice(-limit);
+  }
 }
 
-// Utilizza DatabaseStorage invece di MemStorage per persistenza dati
-export const storage = new DatabaseStorage();
+// Use MemStorage when no real DATABASE_URL is configured (local dev / CI)
+const hasRealDb = process.env.DATABASE_URL &&
+  !process.env.DATABASE_URL.startsWith("postgresql://fake");
+export const storage = hasRealDb ? new DatabaseStorage() : new MemStorage();
