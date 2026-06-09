@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertCategorySchema, insertProductSchema, insertOrderSchema, insertOrderItemSchema, insertSubscriptionSchema, insertReservationSchema, type InsertUser } from "@shared/schema";
 import { buildElenaSystemPrompt, buildOwnerBriefing, generateElenaAdvice } from "./elena-brain";
+import { handleChatTurn } from "./elena-chat/index";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Base API path
@@ -413,6 +414,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         generatedAt: now.toISOString(),
       });
     } catch { res.status(500).json({ error: "Failed to generate briefing" }); }
+  });
+
+  // ─── Elena Chat API ──────────────────────────────────────────────────────────
+
+  app.post(`${apiPath}/elena/chat`, async (req, res) => {
+    try {
+      const { sessionId, message } = req.body;
+      if (typeof message !== "string" || !message.trim() || message.length > 500) {
+        res.status(400).json({ error: "message must be a non-empty string (max 500 chars)" });
+        return;
+      }
+      const safeMessage = message.replace(/[\x00-\x08\x0B-\x1F\x7F]/g, "");
+
+      const result = await handleChatTurn(sessionId, safeMessage, async (data) => {
+        const parsed = insertReservationSchema.parse(data);
+        return await storage.createReservation(parsed);
+      });
+
+      // Side effect: broadcast so admin sees the new reservation in real time
+      const rawResult = result as unknown as Record<string, unknown>;
+      if (rawResult._reservation) {
+        broadcastToAdmins({ type: "new_reservation", reservation: rawResult._reservation });
+      }
+
+      const { _reservation, ...response } = rawResult;
+      res.json({ ...response, reservation: _reservation ?? null });
+    } catch (err) {
+      res.status(500).json({ error: "Chat engine error" });
+    }
   });
 
   // ─── Diana API: Logs / Memory ────────────────────────────────────────────────

@@ -54,12 +54,12 @@ export default function OwnerModePanel({ isOpen, onClose }: OwnerModePanelProps)
   }, [isOpen, greeted, playOwnerMode, soundEnabled]);
 
   const ownerActions = [
-    { label: "Prenotazioni oggi", description: "Vedi e gestisci le prenotazioni di oggi" },
+    { label: "Print dagoverzicht", description: "Papieren dagstaat — printklaar voor Jan", onClick: () => window.open("/dagstaat", "_blank") },
+    { label: "Prenotazioni oggi", description: "Vedi e gestisci le prenotazioni di oggi", onClick: () => window.open("/dagstaat", "_blank") },
     { label: "Vista settimana", description: "Vista settimanale completa" },
     { label: "Aggiorna menu", description: "Aggiungi o modifica piatti e prezzi" },
     { label: "Orari apertura", description: "Cambia orari di apertura e chiusura" },
     { label: "Gestione tavoli", description: "Aggiungi, rimuovi o riorganizza i tavoli" },
-    { label: "Report statistiche", description: "Report settimanale e mensile" },
   ];
 
   const stats = briefing?.stats;
@@ -347,9 +347,10 @@ export default function OwnerModePanel({ isOpen, onClose }: OwnerModePanelProps)
                     gap: "8px",
                   }}
                 >
-                  {ownerActions.map(({ label, description }) => (
+                  {ownerActions.map(({ label, description, onClick }) => (
                     <button
                       key={label}
+                      onClick={onClick}
                       style={{
                         background: "rgba(228,192,127,0.05)",
                         border: "2px solid rgba(228,192,127,0.15)",

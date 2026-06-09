@@ -15,6 +15,8 @@ import HomePage from "@/pages/HomePage";
 import DashboardPage from "@/pages/DashboardPage";
 import ElenaPage from "@/pages/ElenaPage";
 import BookingPage from "@/pages/BookingPage";
+import QrPosterPage from "@/pages/QrPosterPage";
+import DagstaatPage from "@/pages/DagstaatPage";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -39,6 +41,8 @@ function Router() {
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/elena" component={ElenaPage} />
           <Route path="/prenota" component={BookingPage} />
+          <Route path="/qr" component={QrPosterPage} />
+          <Route path="/dagstaat" component={DagstaatPage} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>
