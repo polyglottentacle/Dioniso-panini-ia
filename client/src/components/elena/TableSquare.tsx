@@ -20,6 +20,7 @@ export const MAP_BOUNDS = { xMin: 8, xMax: 92, yMin: 18, yMax: 87 };
 interface TableSquareProps {
   table: TableData;
   selected: boolean;
+  locked: boolean; // layout lock: tap/status still work, dragging is disabled
   onSelect: (id: number) => void;
   onDrop: (id: number, x: number, y: number) => void;
   onStatusCycle: (id: number, status: TableData["status"]) => void;
@@ -51,6 +52,7 @@ const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(mi
 export default function TableSquare({
   table,
   selected,
+  locked,
   onSelect,
   onDrop,
   onStatusCycle,
@@ -75,6 +77,7 @@ export default function TableSquare({
   const handlePointerMove = (e: React.PointerEvent) => {
     const d = dragRef.current;
     if (!d) return;
+    if (locked) return; // layout locked: no dragging during service
     const dx = e.clientX - d.startX;
     const dy = e.clientY - d.startY;
     if (!d.moved && Math.hypot(dx, dy) < 6) return; // tap vs drag threshold
@@ -141,7 +144,7 @@ export default function TableSquare({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        cursor: isDragging ? "grabbing" : "grab",
+        cursor: isDragging ? "grabbing" : locked ? "pointer" : "grab",
         userSelect: "none",
         touchAction: "none", // critical: lets pointer-drag work on touch without scrolling
         zIndex: isDragging ? 30 : selected ? 15 : 5,

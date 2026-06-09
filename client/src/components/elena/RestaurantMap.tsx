@@ -7,7 +7,10 @@ interface RestaurantMapProps {
   onMergeTables: (ids: number[]) => void;
   onUnmergeTable: (id: number) => void;
   onStatusCycle: (id: number, status: TableData["status"]) => void;
+  onWalkIn: (id: number, partySize: number) => void;
 }
+
+const LAYOUT_LOCK_KEY = "elena_layout_locked";
 
 function BarCounter() {
   return (
@@ -202,13 +205,28 @@ export default function RestaurantMap({
   onMergeTables,
   onUnmergeTable,
   onStatusCycle,
+  onWalkIn,
 }: RestaurantMapProps) {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  // Layout lock: persists so Jan can't accidentally drag tables during service
+  const [locked, setLocked] = useState(
+    () => localStorage.getItem(LAYOUT_LOCK_KEY) !== "0"
+  );
+  const [walkInOpen, setWalkInOpen] = useState(false);
+  const [walkInSize, setWalkInSize] = useState(2);
+
+  const toggleLock = () => {
+    setLocked((l) => {
+      localStorage.setItem(LAYOUT_LOCK_KEY, l ? "0" : "1");
+      return !l;
+    });
+  };
 
   const handleSelect = useCallback((id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+    setWalkInOpen(false);
   }, []);
 
   const handleMerge = () => {
@@ -217,7 +235,10 @@ export default function RestaurantMap({
     setSelectedIds([]);
   };
 
-  const handleClearSelection = () => setSelectedIds([]);
+  const handleClearSelection = () => {
+    setSelectedIds([]);
+    setWalkInOpen(false);
+  };
 
   // "Dividi" appears when exactly one merged table is selected
   const selectedMergedTable =
@@ -229,6 +250,20 @@ export default function RestaurantMap({
     if (!selectedMergedTable) return;
     onUnmergeTable(selectedMergedTable.id);
     setSelectedIds([]);
+  };
+
+  // Walk-in: one selected, non-occupied table
+  const selectedWalkInTable =
+    selectedIds.length === 1
+      ? tables.find((t) => t.id === selectedIds[0] && t.status !== "occupied")
+      : undefined;
+
+  const handleWalkInConfirm = () => {
+    if (!selectedWalkInTable) return;
+    onWalkIn(selectedWalkInTable.id, walkInSize);
+    setSelectedIds([]);
+    setWalkInOpen(false);
+    setWalkInSize(2);
   };
 
   return (
@@ -266,9 +301,90 @@ export default function RestaurantMap({
               </span>
             </span>
           ))}
+          <button
+            onClick={toggleLock}
+            title={locked ? "Layout bloccato — clicca per spostare i tavoli" : "Layout libero — clicca per bloccare"}
+            style={{
+              fontSize: "9px",
+              padding: "2px 8px",
+              border: `2px solid ${locked ? "#7a6a8a" : "#e4c07f"}`,
+              color: locked ? "#7a6a8a" : "#160926",
+              background: locked ? "transparent" : "#e4c07f",
+              borderRadius: "3px",
+              boxShadow: "2px 2px 0 #0a0010",
+              fontFamily: "monospace",
+              fontWeight: 700,
+              cursor: "pointer",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            {locked ? "Layout: bloccato" : "Layout: libero"}
+          </button>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {selectedWalkInTable && !walkInOpen && (
+            <button
+              onClick={() => setWalkInOpen(true)}
+              style={{
+                fontSize: "10px",
+                padding: "3px 10px",
+                background: "#c0392b",
+                color: "#ffffff",
+                border: "2px solid #0a0010",
+                borderRadius: "3px",
+                boxShadow: "3px 3px 0 #0a0010",
+                fontFamily: "monospace",
+                fontWeight: 700,
+                cursor: "pointer",
+                letterSpacing: "0.05em",
+              }}
+            >
+              Walk-in {selectedWalkInTable.label}
+            </button>
+          )}
+          {selectedWalkInTable && walkInOpen && (
+            <span
+              className="flex items-center gap-2"
+              style={{
+                border: "2px solid #c0392b",
+                borderRadius: "3px",
+                boxShadow: "3px 3px 0 #0a0010",
+                padding: "2px 8px",
+                background: "#1d0f30",
+              }}
+            >
+              <button
+                onClick={() => setWalkInSize((n) => Math.max(1, n - 1))}
+                style={{ fontFamily: "monospace", fontWeight: 900, fontSize: "13px", color: "#e4c07f", background: "none", border: "none", cursor: "pointer", lineHeight: 1 }}
+              >−</button>
+              <span style={{ fontFamily: "monospace", fontWeight: 900, fontSize: "12px", color: "#fff", minWidth: "30px", textAlign: "center" }}>
+                {walkInSize}p
+              </span>
+              <button
+                onClick={() => setWalkInSize((n) => Math.min(selectedWalkInTable.capacity, n + 1))}
+                style={{ fontFamily: "monospace", fontWeight: 900, fontSize: "13px", color: "#e4c07f", background: "none", border: "none", cursor: "pointer", lineHeight: 1 }}
+              >+</button>
+              <button
+                onClick={handleWalkInConfirm}
+                style={{
+                  fontSize: "10px",
+                  padding: "2px 8px",
+                  background: "#c0392b",
+                  color: "#fff",
+                  border: "2px solid #0a0010",
+                  borderRadius: "3px",
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                Siedi ✓
+              </button>
+            </span>
+          )}
           {selectedIds.length > 0 && (
             <>
               <button
@@ -402,6 +518,7 @@ export default function RestaurantMap({
             key={table.id}
             table={table}
             selected={selectedIds.includes(table.id)}
+            locked={locked}
             onSelect={handleSelect}
             onDrop={onTableUpdate}
             onStatusCycle={onStatusCycle}
@@ -421,7 +538,9 @@ export default function RestaurantMap({
           textTransform: "uppercase",
         }}
       >
-        Tocca = seleziona · Trascina = sposta · Doppio tocco = stato · 2+ per unire
+        {locked
+          ? "Tocca = seleziona · Doppio tocco = stato · 1 libero = walk-in · 2+ = unisci"
+          : "Layout libero: trascina per spostare i tavoli · Doppio tocco = stato"}
       </p>
     </div>
   );

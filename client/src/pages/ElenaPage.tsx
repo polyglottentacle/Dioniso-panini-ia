@@ -85,9 +85,26 @@ export default function ElenaPage() {
     },
   });
 
+  const walkInMutation = useMutation({
+    mutationFn: ({ id, partySize }: { id: number; partySize: number }) =>
+      apiRequest("POST", `/api/tables/${id}/walkin`, { partySize }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/tables"] });
+      qc.invalidateQueries({ queryKey: ["/api/reservations/today"] });
+      toast({ title: "Walk-in registrato", description: "Tavolo occupato e prenotazione creata." });
+    },
+    onError: () => {
+      toast({ title: "Walk-in non riuscito", description: "Il tavolo potrebbe essere già occupato.", variant: "destructive" });
+    },
+  });
+
   const handleTableUpdate = useCallback((id: number, x: number, y: number) => {
     updateTableMutation.mutate({ id, x, y });
   }, [updateTableMutation]);
+
+  const handleWalkIn = useCallback((id: number, partySize: number) => {
+    walkInMutation.mutate({ id, partySize });
+  }, [walkInMutation]);
 
   const handleMergeTables = useCallback((ids: number[]) => {
     mergeTablesMutation.mutate(ids);
@@ -229,6 +246,7 @@ export default function ElenaPage() {
               onMergeTables={handleMergeTables}
               onUnmergeTable={handleUnmergeTable}
               onStatusCycle={handleStatusCycle}
+              onWalkIn={handleWalkIn}
             />
           </div>
         </div>

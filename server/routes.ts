@@ -329,6 +329,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     status: z.enum(["free", "occupied", "reserved"]).optional(),
   }).strict();
 
+  // Audit trail: every table action is logged (who-did-what for Jan)
+  async function auditTable(message: string) {
+    try {
+      await storage.addDianaLog({ channel: "dashboard", role: "owner", message, intent: "table_action", metadata: {} });
+    } catch { /* logging must never break the action */ }
+  }
+
   app.patch(`${apiPath}/tables/:id`, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -336,6 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = tablePatchSchema.parse(req.body);
       const table = await storage.updateTable(id, data);
       broadcastToAdmins({ type: "table_updated", table });
+      auditTable(`Tafel ${table.label} bijgewerkt: ${Object.keys(data).join(", ")}${data.status ? ` → ${data.status}` : ""}`);
       res.json(table);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -356,6 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const merged = await storage.mergeTables(ids);
       broadcastToAdmins({ type: "tables_merged", merged, ids });
+      auditTable(`Tafels samengevoegd: ${ids.join(" + ")} → ${merged.label} (${merged.capacity}p)`);
       res.json(merged);
     } catch (err) {
       if (err instanceof Error && (err.message.includes("not found") || err.message.includes("secondary"))) {
@@ -373,12 +382,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const restored = await storage.unmergeTables(id);
       broadcastToAdmins({ type: "tables_merged", merged: restored, ids: [id] });
+      auditTable(`Tafel ${restored.label} gesplitst`);
       res.json(restored);
     } catch (err) {
       if (err instanceof Error && (err.message.includes("not found") || err.message.includes("not merged"))) {
         return res.status(400).json({ error: err.message });
       }
       res.status(500).json({ error: "Failed to unmerge table" });
+    }
+  });
+
+  // Walk-in: guests at the door → seat them now. One action: creates a
+  // confirmed walk-in reservation for the current time and marks the
+  // table occupied.
+  app.post(`${apiPath}/tables/:id/walkin`, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const partySize = parseInt(req.body?.partySize);
+      if (isNaN(id)) return res.status(400).json({ error: "Invalid table id" });
+      if (!Number.isInteger(partySize) || partySize < 1 || partySize > 30) {
+        return res.status(400).json({ error: "partySize must be 1-30" });
+      }
+
+      const tables = await storage.getAllTables();
+      const table = tables.find((t) => t.id === id);
+      if (!table) return res.status(404).json({ error: `Table ${id} not found` });
+      if (table.status === "occupied") {
+        return res.status(409).json({ error: "Table is already occupied" });
+      }
+
+      const now = new Date();
+      const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      const reservation = await storage.createReservation({
+        guestName: "Walk-in",
+        guestPhone: "-",
+        date,
+        time,
+        partySize,
+        tableId: id,
+        status: "confirmed",
+        notes: `Walk-in tafel ${table.label}`,
+      });
+      const updated = await storage.updateTable(id, { status: "occupied" });
+
+      broadcastToAdmins({ type: "new_reservation", reservation });
+      broadcastToAdmins({ type: "table_updated", table: updated });
+      auditTable(`Walk-in: ${partySize}p aan tafel ${table.label} om ${time}`);
+
+      res.status(201).json({ reservation, table: updated });
+    } catch {
+      res.status(500).json({ error: "Failed to seat walk-in" });
     }
   });
 
