@@ -23,7 +23,9 @@ function sweepExpired(): void {
 
 function getOrCreate(sessionId?: string): ChatSession {
   sweepExpired();
-  const id = sessionId && sessions.has(sessionId) ? sessionId : uuidv4();
+  // Adopt a client-supplied id (the widget generates a UUID) so the
+  // conversation survives even if the client never syncs the returned id.
+  const id = sessionId && /^[\w-]{8,64}$/.test(sessionId) ? sessionId : uuidv4();
   if (!sessions.has(id)) {
     if (sessions.size >= MAX_SESSIONS) {
       let oldest = "";

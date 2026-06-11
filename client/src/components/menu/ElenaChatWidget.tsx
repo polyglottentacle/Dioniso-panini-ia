@@ -116,6 +116,7 @@ export default function ElenaChatWidget() {
     try {
       const res = await apiRequest("POST", "/api/elena/chat", { sessionId: sessionId.current, message: text });
       const data: ChatResponse = await res.json();
+      sessionId.current = data.sessionId; // server is authoritative — keeps the conversation in one session
       const botMsg: Message = { role: "assistant", text: data.reply, reservation: data.reservation };
       setMessages((m) => [...m, botMsg]);
       setQuickReplies(data.quickReplies ?? []);
