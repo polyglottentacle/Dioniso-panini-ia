@@ -143,6 +143,7 @@ export const FULL_HOUSE_MENU: MenuItem[] = [
     price: 9.00, category: "starter",
     ingredients: ["Gamba's", "Knoflook", "Witte wijn", "Peterselie"],
     allergens: ["Schaaldieren", "Sulfiet"],
+    videoUrl: "/videos/gamberi_full_house.mp4",
     reviews: [
       { text: "De beste gamba's van Lelystad!", author: "Fatima E.", rating: 5 },
       { text: "Het signatuurgerecht van Jan. Top.", author: "Henk D.", rating: 5 },
@@ -155,6 +156,7 @@ export const FULL_HOUSE_MENU: MenuItem[] = [
     price: 9.00, category: "starter",
     ingredients: ["Rundvlees", "Pesto", "Pijnboompitten", "Parmezaan"],
     allergens: ["Noten", "Melk"],
+    videoUrl: "/videos/carpaccio_full_house.mp4",
     reviews: [
       { text: "Dun gesneden, smelt op je tong.", author: "Rob J.", rating: 5 },
       { text: "Mooie presentatie.", author: "Eva S.", rating: 4 },
@@ -166,6 +168,7 @@ export const FULL_HOUSE_MENU: MenuItem[] = [
     price: 8.50, category: "starter",
     ingredients: ["Champignons", "Knoflook", "Witte wijn", "Kruiden"],
     allergens: ["Sulfiet"],
+    videoUrl: "/videos/funghi_full_house.mp4",
     reviews: [
       { text: "Vegetarisch en super smaakvol.", author: "Nadia B.", rating: 5 },
       { text: "Knoflookliefhebbers opgelet!", author: "Tom V.", rating: 5 },
