@@ -12,6 +12,7 @@ import {
 } from "@shared/menu-data";
 import MenuItemCard from "@/components/menu/MenuItemCard";
 import ElenaChatWidget from "@/components/menu/ElenaChatWidget";
+import MenuStories from "@/components/menu/MenuStories";
 
 // Categories shown as rich visual cards; others as compact rows
 const RICH_CATEGORIES: MenuItem["category"][] = ["starter", "main"];
@@ -207,6 +208,7 @@ function BookingForm() {
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function BookingPage() {
   const { language, setLanguage, t } = useLanguage();
+  const [storiesOpen, setStoriesOpen] = useState(false);
   const byCategory = CATEGORY_ORDER.map((cat) => ({ cat, items: FULL_HOUSE_MENU.filter((i) => i.category === cat) }));
 
   // Default to NL on first visit; respect explicit choice afterwards
@@ -274,9 +276,31 @@ export default function BookingPage() {
       <div style={{ maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr", gap: "0" }} className="md:grid-cols-[1fr_380px]">
         {/* Left — Menu */}
         <div style={{ padding: "24px 20px", borderRight: "1px solid rgba(232,119,34,0.15)" }}>
-          <h2 style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "11px", letterSpacing: "0.28em", textTransform: "uppercase", color: ORANGE, marginBottom: "18px" }}>
-            {t("booking.menuTitle")}
-          </h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
+            <h2 style={{ fontFamily: "monospace", fontWeight: 700, fontSize: "11px", letterSpacing: "0.28em", textTransform: "uppercase", color: ORANGE, margin: 0 }}>
+              {t("booking.menuTitle")}
+            </h2>
+            <button
+              onClick={() => setStoriesOpen(true)}
+              style={{
+                background: "none",
+                border: `1px solid rgba(228,192,127,0.4)`,
+                borderRadius: "3px",
+                padding: "5px 12px",
+                cursor: "pointer",
+                fontFamily: "monospace",
+                fontSize: "9px",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#e4c07f",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              ▶ Sfoglia
+            </button>
+          </div>
           <p style={{ fontSize: "11px", color: "#6a5a4a", fontStyle: "italic", marginBottom: "16px", lineHeight: 1.5 }}>
             {t("booking.menuNote")}
           </p>
@@ -314,6 +338,11 @@ export default function BookingPage() {
 
       {/* Elena chat widget */}
       <ElenaChatWidget />
+
+      {/* Menu Stories overlay */}
+      <AnimatePresence>
+        {storiesOpen && <MenuStories onClose={() => setStoriesOpen(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
