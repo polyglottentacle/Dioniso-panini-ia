@@ -1,66 +1,57 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { initializeApp, FirebaseApp } from "firebase/app";
+import {
+  getAuth, Auth, GoogleAuthProvider,
+  signInWithRedirect, getRedirectResult, signOut,
+  onAuthStateChanged, User as FirebaseUser,
+} from "firebase/auth";
 
-// Configurazione Firebase dall'ambiente
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
+// Only initialise Firebase when credentials are present (local dev without
+// Firebase config should not crash the whole React app).
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY as string | undefined;
 
-// Inizializza Firebase
-const app = initializeApp(firebaseConfig);
+let _app: FirebaseApp | undefined;
+let _auth: Auth | undefined;
 
-// Ottieni l'istanza di autenticazione
-export const auth = getAuth(app);
+if (apiKey) {
+  _app = initializeApp({
+    apiKey,
+    authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
+    storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
+  });
+  _auth = getAuth(_app);
+}
 
-// Provider per Google
+export const auth: Auth | undefined = _auth;
 export const googleProvider = new GoogleAuthProvider();
 
-// Funzione per il login con Google usando il redirect
 export const signInWithGoogle = async () => {
-  try {
-    await signInWithRedirect(auth, googleProvider);
-  } catch (error) {
-    console.error("Errore durante il login con Google:", error);
-    throw error;
-  }
+  if (!_auth) { console.warn("Firebase not configured"); return; }
+  await signInWithRedirect(_auth, googleProvider);
 };
 
-// Funzione per gestire il risultato del redirect
 export const handleRedirectResult = async () => {
+  if (!_auth) return null;
   try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      return result.user;
-    }
-    return null;
+    const result = await getRedirectResult(_auth);
+    return result?.user ?? null;
   } catch (error) {
     console.error("Errore durante il login:", error);
-    throw error;
+    return null;
   }
 };
 
-// Funzione per il logout
 export const logoutUser = async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Errore durante il logout:", error);
-    throw error;
-  }
+  if (!_auth) return;
+  await signOut(_auth);
 };
 
-// Funzione per ottenere l'utente attuale
 export const getCurrentUser = (): Promise<FirebaseUser | null> => {
+  if (!_auth) return Promise.resolve(null);
   return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
-    });
+    const unsub = onAuthStateChanged(_auth!, (user) => { unsub(); resolve(user); });
   });
 };
 
-export default app;
+export default _app;

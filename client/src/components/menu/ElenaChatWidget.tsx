@@ -99,7 +99,7 @@ export default function ElenaChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
-  const sessionId = useRef(crypto.randomUUID());
+  const sessionId = useRef<string>(crypto.randomUUID());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
